@@ -1,76 +1,95 @@
-<!DOCTYPE html>
-<html lang="nl">
+
+ml lang="nl">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>DRAAGKOMPAS – prototype met filters</title>
 <style>
   :root{
-    /* Pas kleuren aan je huisstijl aan */
-    --brand-bg: #1b179e;   /* jouw paarsblauwe achtergrond */
-    --brand-txt: #e6ebff;  /* lichte tekst */
-    --accent:   #ff3b30;   /* kompas/rood accent */
+    /* Huisstijlkleuren (pas gerust aan) */
+    --brand-bg: #1a1399;   /* paarsblauw */
+    --brand-txt: #cfe1ff;  /* lichtlavendel */
+    --accent:   #e63a2e;   /* rood/oranje */
     --chip:     #e9efff;
     --ink:      #212428;
-    --muted:    #64748b;
+    --muted:    #6b7280;
     --card:     #ffffff;
     --line:     #e6e6f0;
   }
-
-  html,body{margin:0;padding:0;background:#f7f7fb;color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-  .hero{
-    background:var(--brand-bg); color:var(--brand-txt);
-    padding:20px 16px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;
-  }
-  .hero img{ height:56px; width:auto; display:block; }
-  .hero h1{ margin:0; font-size:22px; letter-spacing:.5px }
-  .wrap{ max-width:1100px; margin:0 auto; padding:16px }
-
-  .filters{
-    background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; margin:12px 0;
-    display:grid; gap:10px;
-  }
+  html,body{margin:0;padding:0;background:#f7f7fb;color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  /* Hero */
+  .hero{ background:var(--brand-bg); color:var(--brand-txt); padding:18px 14px }
+  .hero .row{ max-width:1100px; margin:0 auto; display:flex; gap:16px; align-items:center; flex-wrap:wrap }
+  .hero .logo{ display:flex; align-items:center; gap:14px }
+  .hero h1{ margin:0; font-size:24px; letter-spacing:.3px }
+  /* Wrapper */
+  .wrap{ max-width:1100px; margin:0 auto; padding:14px }
+  /* Filters */
+  .filters{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; margin:12px 0; display:grid; gap:10px }
   .filters .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center }
   .filters label{ font-size:14px; color:var(--muted) }
-  .filters .chips{ display:flex; gap:8px; flex-wrap:wrap }
-  .chip{ background:var(--chip); border:1px solid var(--line); padding:6px 10px; border-radius:999px; font-size:13px; cursor:pointer; }
-  .chip input{ margin-right:6px; }
-  select, input[type="search"]{
-    border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:inherit; background:#fff;
-  }
+  .chips{ display:flex; gap:8px; flex-wrap:wrap }
+  .chip{ background:var(--chip); border:1px solid var(--line); padding:6px 10px; border-radius:999px; font-size:13px; cursor:pointer }
+  .chip input{ margin-right:6px }
+  select, input[type="search"]{ border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:inherit; background:#fff }
+  /* Grid / kaarten */
   .grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin:16px 0 }
-  .card{
-    background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px;
-    box-shadow:0 1px 3px rgba(0,0,0,.05);
-  }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,.05) }
   .meta{ color:var(--muted); font-size:13px; margin:4px 0 8px }
   .pills{ display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 }
   .pill{ background:var(--chip); border:1px solid var(--line); padding:2px 8px; border-radius:999px; font-size:12px }
   .tabs{ display:flex; gap:6px; margin-top:8px }
-  .tabs button{
-    padding:6px 10px; border-radius:8px; border:1px solid var(--line); background:#fafafa; cursor:pointer; font-size:13px
-  }
+  .tabs button{ padding:6px 10px; border-radius:8px; border:1px solid var(--line); background:#fafafa; cursor:pointer; font-size:13px }
   .tabs button.active{ background:var(--brand-bg); color:#fff; border-color:var(--brand-bg) }
   .section{ display:none; margin-top:8px; font-size:14px }
   .section.active{ display:block }
   .kv{ margin:3px 0 }
   .kv b{ color:var(--ink) }
   .footer{ color:var(--muted); font-size:12px; margin:20px 0 32px }
-  .sr{ display:none } /* simple range helper */
+  /* Inline SVG logo styling helper */
+  .brand-svg{ height:56px; width:auto; display:block }
+  @media (max-width:480px){ .brand-svg{ height:46px } }
 </style>
 </head>
 <body>
 
-<!-- Header met logo -->
+<!-- HERO met inline SVG-logo/wordmark in jouw kleuren -->
 <div class="hero">
-  <!-- Vervang de src door jouw bestandsnaam als nodig -->
-  <img src="DRAAGKOMPAS (1).png" alt="DRAAGKOMPAS logo" />
-  <h1>DRAAGKOMPAS – prototype</h1>
+  <div class="row">
+    <div class="logo" aria-label="DRAAGKOMPAS logo">
+      <!-- Simpele inline-variant van je logo (vervang ik later graag door je exacte PNG als base64) -->
+      <svg class="brand-svg" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+        <title id="title">DRAAGKOMPAS by Zoedeloe</title>
+        <desc id="desc">Woordmerk in paarsblauw met rood kompasaccent</desc>
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#cfe1ff"/>
+            <stop offset="1" stop-color="#b9cfff"/>
+          </linearGradient>
+        </defs>
+        <!-- Kompascirkel -->
+        <circle cx="80" cy="100" r="58" fill="none" stroke="url(#g1)" stroke-width="6"/>
+        <!-- Kompasnaald -->
+        <line x1="40" y1="30" x2="120" y2="170" stroke="#e63a2e" stroke-width="8" stroke-linecap="round"/>
+        <!-- Binnenpunt -->
+        <circle cx="82" cy="98" r="16" fill="none" stroke="#e63a2e" stroke-width="6"/>
+        <!-- Gestileerde draagfiguur (abstract) -->
+        <path d="M62,85 q18,-38 44,-18 q20,16 0,40 q-10,12 -24,12" fill="none" stroke="#cfe1ff" stroke-width="6" stroke-linecap="round"/>
+        <!-- Wordmark rechts -->
+        <g transform="translate(160,48)">
+          <text x="0" y="48" font-size="56" font-family="Segoe UI, Roboto, Arial, sans-serif" fill="#cfe1ff" letter-spacing="2">DRAAG</text>
+          <text x="0" y="112" font-size="56" font-family="Segoe UI, Roboto, Arial, sans-serif" fill="#e63a2e" letter-spacing="2">KOMPAS</text>
+          <text x="370" y="120" font-size="28" font-family="Segoe UI, Roboto, Arial, sans-serif" fill="#cfe1ff" style="font-style:italic">by Zoedeloe</text>
+        </g>
+      </svg>
+      <h1>DRAAGKOMPAS</h1>
+    </div>
+  </div>
 </div>
 
 <div class="wrap">
 
-  <!-- Zoek en filters -->
+  <!-- FILTERS -->
   <div class="filters" id="filters">
     <div class="row" style="gap:10px 20px;">
       <label for="q"><b>Zoek</b></label>
@@ -115,18 +134,18 @@
     </div>
   </div>
 
-  <!-- Lijst -->
+  <!-- LIJST -->
   <div id="list" class="grid"></div>
 
   <div class="footer">
-    Prototype – filters: maat, kruisbaar, PFA, waterdrager, harnas, face‑forward. Sorteren op merk en maten.
+    DRAAGKOMPAS – filters: maat, kruisbaar, PFA, waterdrager, harnas, face‑forward. Sorteren: merk en min/max maten.
   </div>
 </div>
 
 <script>
 /** =========================
- * DEMO‑DATA (inkort)
- * Zo kun je nu al testen. Ik neem je VOLLEDIGE DB op in de hosted versie.
+ * DEMO‑DATA (kort): werkt al met filters.
+ * Ik zet hierna GRAAG jouw VOLLEDIGE database in.
  * ========================== */
 const DB = {
   "records":[
@@ -168,39 +187,29 @@ const DB = {
   ]
 };
 
-/** ===== Maat‑parser =====
- * Pakt "56-80", "62/68 - 86", "ruime 56", "86-104", "One size"
- */
+/** ===== Maat‑parser ===== */
 function parseMaatRange(txt){
   if(!txt) return null;
   txt = String(txt).toLowerCase();
   if(txt.includes('one size')) return {min:null,max:null, note:'one'};
-  // haal alle getallen
   const nums = (txt.match(/\d{2,3}/g)||[]).map(n=>parseInt(n,10));
   if(nums.length===0) return null;
   if(nums.length===1) return {min:nums[0],max:null};
   return {min:nums[0],max:nums[nums.length-1]};
 }
-
 function maatMatch(selected, advies){
-  if(!selected) return true; // "Alle"
+  if(!selected) return true; // Alle
   const want = parseInt(selected,10);
   const r = parseMaatRange(advies);
   if(!r) return false;
-  if(r.note==='one') return true; // One size altijd tonen
+  if(r.note==='one') return true;
   if(r.min!=null && r.max!=null) return (want>=r.min && want<=r.max);
   if(r.min!=null && r.max==null) return (want>=r.min);
   return true;
 }
 
-/** ====== Rendering ====== */
-function el(tag, html, attrs={}){
-  const e=document.createElement(tag);
-  if(html!==undefined) e.innerHTML=html;
-  Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
-  return e;
-}
-
+/** ===== Rendering helpers ===== */
+function el(tag, html, attrs={}){ const e=document.createElement(tag); if(html!==undefined) e.innerHTML=html; Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); return e; }
 function renderKV(obj){
   if(!obj) return '';
   return Object.entries(obj)
@@ -208,7 +217,6 @@ function renderKV(obj){
     .map(([k,v])=>`<div class="kv"><b>${k}</b>: ${typeof v==='object'?JSON.stringify(v):v}</div>`)
     .join('');
 }
-
 function card(rec){
   const t = (rec.always?.merk||'') + ' ' + (rec.always?.model||'');
   const type = rec.always?.type_drager || '';
@@ -239,7 +247,6 @@ function card(rec){
   c.append(sAlways, sBasic, sPro, sSafe);
   return c;
 }
-
 function showTab(id, which){
   ['always','basic','pro','veilig'].forEach(w=>{
     const sec = document.querySelector(`.sec-${id}-${w}`);
@@ -250,42 +257,30 @@ function showTab(id, which){
     tab.classList.toggle('active', on);
   });
 }
-
 function comparator(kind){
   switch(kind){
-    case 'merk_az':
-      return (a,b)=>String(a.always?.merk||'').localeCompare(String(b.always?.merk||''));
-    case 'breedte_min':
-      return (a,b)=>(a.pro?.rugpand_breedte_min_cm??999)-(b.pro?.rugpand_breedte_min_cm??999);
-    case 'breedte_max':
-      return (a,b)=>(a.pro?.rugpand_breedte_max_cm??999)-(b.pro?.rugpand_breedte_max_cm??999);
-    case 'hoogte_min':
-      return (a,b)=>(a.pro?.rugpand_hoogte_min_cm??999)-(b.pro?.rugpand_hoogte_min_cm??999);
-    case 'hoogte_max':
-      return (a,b)=>(a.pro?.rugpand_hoogte_max_cm??999)-(b.pro?.rugpand_hoogte_max_cm??999);
+    case 'merk_az':   return (a,b)=>String(a.always?.merk||'').localeCompare(String(b.always?.merk||'')); 
+    case 'breedte_min': return (a,b)=>(a.pro?.rugpand_breedte_min_cm??999)-(b.pro?.rugpand_breedte_min_cm??999);
+    case 'breedte_max': return (a,b)=>(a.pro?.rugpand_breedte_max_cm??999)-(b.pro?.rugpand_breedte_max_cm??999);
+    case 'hoogte_min':  return (a,b)=>(a.pro?.rugpand_hoogte_min_cm??999)-(b.pro?.rugpand_hoogte_min_cm??999);
+    case 'hoogte_max':  return (a,b)=>(a.pro?.rugpand_hoogte_max_cm??999)-(b.pro?.rugpand_hoogte_max_cm??999);
     case 'maat_min':
       return (a,b)=>{
         const pa=parseMaatRange(a.veilig?.expert_maatadvies), pb=parseMaatRange(b.veilig?.expert_maatadvies);
-        const va = pa?.min ?? 999, vb = pb?.min ?? 999;
+        const va = pa?.min ?? 999, vb = pb?.min ?? 999; 
         return va - vb;
       };
-    default:
-      return ()=>0;
+    default: return ()=>0;
   }
 }
-
 function passesToggles(rec, tgl){
   if(tgl.kruisbaar && !rec.basic?.schouderband_kruisbaar) return false;
   if(tgl.pfa && !rec.basic?.pfa_aanwezig) return false;
   if(tgl.water && (rec.basic?.speciale_categorie!=='waterdrager')) return false;
   if(tgl.harnas && (rec.basic?.systeemtype!=='harnas')) return false;
-  if(tgl.ff){
-    const ff = rec.veilig?.face_forward_mogelijk;
-    if(ff!==true) return false;
-  }
+  if(tgl.ff){ const ff = rec.veilig?.face_forward_mogelijk; if(ff!==true) return false; }
   return true;
 }
-
 function renderList(){
   const q = document.getElementById('q').value.trim().toLowerCase();
   const sort = document.getElementById('sort').value;
@@ -297,23 +292,11 @@ function renderList(){
     harnas:    document.getElementById('f_harnas').checked,
     ff:        document.getElementById('f_ff').checked
   };
-
   let items = DB.records.slice();
-
-  // text search
-  if(q){
-    items = items.filter(r=>{
-      const hay = JSON.stringify(r).toLowerCase();
-      return hay.includes(q);
-    });
-  }
-  // maat filter
+  if(q){ items = items.filter(r=> (JSON.stringify(r)||'').toLowerCase().includes(q)); }
   items = items.filter(r=> maatMatch(maatSel, r.veilig?.expert_maatadvies));
-  // toggles
   items = items.filter(r=> passesToggles(r, tgl));
-  // sort
   items.sort(comparator(sort));
-
   const list = document.getElementById('list');
   list.innerHTML = '';
   if(items.length===0){
@@ -322,7 +305,6 @@ function renderList(){
   }
   items.forEach(r=> list.appendChild(card(r)));
 }
-
 document.addEventListener('DOMContentLoaded', ()=>{
   ['q','sort','f_kruisbaar','f_pfa','f_water','f_harnas','f_ff'].forEach(id=>{
     const el = document.getElementById(id);
