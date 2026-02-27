@@ -44,10 +44,84 @@
   .kv{margin:3px 0}
   .kv b{color:#212428}
   .footer{color:var(--muted);font-size:12px;margin:20px 0 32px}
+
+/* ========== DRAAGKOMPAS – multi-screen + floating logo ========== */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* Splash (volledig scherm met groot logo) */
+.splash{
+  background:#0f0f78; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:22px; padding:24px;
+}
+.splash .splash-logo{max-width:520px; width:88vw; height:auto; border-radius:6px;
+  box-shadow:0 8px 40px rgba(0,0,0,.35)}
+.splash .splash-btn{
+  background:#cfe1ff; color:#0f0f78; border:none; border-radius:999px;
+  padding:10px 18px; font-weight:600; cursor:pointer;
+}
+
+/* Disclaimer */
+.disclaimer{
+  background:#fff7e6; color:#5a3f00; display:flex; align-items:center; justify-content:center;
+  padding:32px 16px;
+}
+.disclaimer .box{
+  max-width:860px; background:#fff; border:1px solid #f3d19c; border-radius:14px; padding:18px;
+  box-shadow:0 4px 20px rgba(122,86,0,.08)
+}
+.disclaimer h2{ margin:0 0 10px 0; color:#5a3f00 }
+.disclaimer p{ margin:0; font-size:15px; line-height:1.6 }
+.disclaimer .actions{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap }
+.disclaimer .btn{
+  background:#0f2b6e; color:#fff; border:1px solid #0f2b6e; border-radius:8px; padding:9px 14px; cursor:pointer;
+}
+.disclaimer .btn.secondary{
+  background:#eef3ff; color:#0f2b6e; border-color:#d9e3ff;
+}
+
+/* App container (we vullen die via JS met je bestaande .hero + .wrap) */
+#screen-app{ background:#f7f7fb }
+
+/* Zwevend logo rechtsonder (zichtbaar op disclaimer + app, niet op splash) */
+.floating-logo{
+  position:fixed; right:16px; bottom:16px; width:64px; height:auto; z-index:999;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.25));
+  display:none; /* JS zet dit op block buiten splash */
+}
+@media (max-width:480px){ .floating-logo{ width:50px } }
+
 </style>
 </head>
 <body>
+<!-- ========== DRAAGKOMPAS – Scherm 1 en 2 + hook voor 3 ========== -->
+<section id="screen-splash" class="screen splash active" aria-label="Welkom">
+  <!-- We vullen src dynamisch met dezelfde base64 als je header-logo -->
+  <img id="splashLogo" class="splash-logo" alt="DRAAGKOMPAS logo">
+  <button id="toDisclaimer" class="splash-btn" type="button">Verder</button>
+</section>
 
+<section id="screen-disclaimer" class="screen disclaimer" aria-label="Belangrijk advies">
+  <div class="box">
+    <h2>Belangrijk</h2>
+    <p>
+      Deze tool is jouw kompas in je zoektocht naar een geschikte drager die beantwoordt aan je specifieke wensen.
+      De resultaten zijn een startpunt, geen eindbestemming, en vervangen nooit een persoonlijk draagconsult op maat.
+      Koop daarom nooit een drager voor je deze met de juiste begeleiding gepast hebt.
+    </p>
+    <div class="actions">
+      <button id="toApp" class="btn" type="button">Ik begrijp het – ga verder</button>
+      <button id="backSplash" class="btn secondary" type="button">Terug</button>
+    </div>
+  </div>
+</section>
+
+<!-- Dit is de container waar we jouw bestaande .hero + .wrap in plaatsen -->
+<section id="screen-app" class="screen" aria-label="Draagkompas app"></section>
+
+<!-- Zwevend logo rechtsonder op alle volgende schermen -->
+<img id="floatingLogo" class="floating-logo" alt="DRAAGKOMPAS logo">
+<!-- ========== EINDE multi-screen blok ========== -->
 <div class="hero">
   <div class="row" aria-label="DRAAGKOMPAS">
     <img class="brand-img" alt="DRAAGKOMPAS logo" src="logo.png">
@@ -134,6 +208,49 @@ function passesToggles(rec,tgl){ if(tgl.kruisbaar && !rec.basic?.schouderband_kr
 function renderList(){ const q=document.getElementById('q').value.trim().toLowerCase(); const sort=document.getElementById('sort').value; const maatSel=(document.querySelector('input[name="maat"]:checked')||{}).value||''; const tgl={ kruisbaar:document.getElementById('f_kruisbaar').checked, pfa:document.getElementById('f_pfa').checked, water:document.getElementById('f_water').checked, harnas:document.getElementById('f_harnas').checked, ff:document.getElementById('f_ff').checked }; let items=DB.records.slice(); if(q){ items=items.filter(r=>(JSON.stringify(r)||'').toLowerCase().includes(q)); } items=items.filter(r=>maatMatch(maatSel, r.veilig?.expert_maatadvies)); items=items.filter(r=>passesToggles(r,tgl)); items.sort(comparator(sort)); const list=document.getElementById('list'); list.innerHTML=''; if(items.length===0){ list.innerHTML=`<div style="grid-column:1/-1;color:#8c8fa1">Geen resultaten voor je combinatie. Pas je filters aan.</div>`; return; } items.forEach(r=>list.appendChild(card(r))); }
 
 document.addEventListener('DOMContentLoaded',()=>{ ['q','sort','f_kruisbaar','f_pfa','f_water','f_harnas','f_ff'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input',renderList); }); document.querySelectorAll('input[name="maat"]').forEach(r=>r.addEventListener('change',renderList)); renderList(); });
+/* ========== DRAAGKOMPAS – multi-screen controller ========== */
+document.addEventListener('DOMContentLoaded', function(){
+  const scrSplash = document.getElementById('screen-splash');
+  const scrDisc   = document.getElementById('screen-disclaimer');
+  const scrApp    = document.getElementById('screen-app');
+  const btnToDisc = document.getElementById('toDisclaimer');
+  const btnToApp  = document.getElementById('toApp');
+  const btnBack   = document.getElementById('backSplash');
+  const splashLogo = document.getElementById('splashLogo');
+  const floating  = document.getElementById('floatingLogo');
+
+  // Hergebruik dezelfde logo-bron die je al inline hebt (brandImg uit je header)
+  const headerImg = document.getElementById('brandImg'); // uit je bestaande HERO
+  const logoSrc = headerImg && headerImg.src ? headerImg.src : null;
+  if (logoSrc) {
+    splashLogo.src = logoSrc;
+    floating.src   = logoSrc;
+  }
+
+  // Verplaats je bestaande .hero en .wrap in het app-scherm:
+  const hero = document.querySelector('.hero');
+  const wrap = document.querySelector('.wrap');
+  if (hero) scrApp.appendChild(hero);
+  if (wrap) scrApp.appendChild(wrap);
+
+  function show(name){
+    // toon precies één scherm
+    scrSplash.classList.toggle('active', name==='splash');
+    scrDisc.classList.toggle('active',   name==='disc');
+    scrApp.classList.toggle('active',    name==='app');
+
+    // floating logo: NIET op splash, WEL op disc + app
+    floating.style.display = (name==='splash') ? 'none' : 'block';
+  }
+
+  // Start op splash
+  show('splash');
+
+  // Navigatieknoppen
+  btnToDisc?.addEventListener('click', ()=>show('disc'));
+  btnBack?.addEventListener('click',    ()=>show('splash'));
+  btnToApp?.addEventListener('click',   ()=>show('app'));
+});
 </script>
 </body>
 </html>
