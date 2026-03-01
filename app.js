@@ -1,102 +1,145 @@
-/* ====== Basis ====== */
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif; color: #0e0e10; background: #0f0b3a; }
+// Draagkompas – app navigatie & filters
+const SCREENS = ["screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
+let currentScreen = "screen-1";
+let lastChoice = null; // 'zoek' | 'vergelijk'
+let filtersConfig = null;
 
-:root {
-  --bg: #0f0b3a; --card: #15104a; --ink: #ffffff; --muted: #cfd3ff; --accent: #ff7a59; --accent-ink: #1a1446; --line: rgba(255,255,255,0.15); --panel: #1b165c;
+function goTo(id) {
+  SCREENS.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.toggle('active', s === id);
+  });
+  currentScreen = id;
+  updateHeaderVisibility();
+  updateNavStates();
 }
 
-.app-header { position: sticky; top: 0; left: 0; right: 0; height: 56px; display: flex; align-items: center; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--line); z-index: 10; }
-.brand { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; letter-spacing: 0.08em; }
-.logo-img { height: 28px; width: auto; display: block; object-fit: contain; }
-.hidden { display: none !important; }
-
-.app { min-height: 100svh; display: grid; place-items: stretch; }
-.screen { min-height: 100svh; padding: 16px; color: var(--ink); display: none; }
-.screen.active { display: block; }
-
-/* Screen 1 */
-.screen1-wrapper { min-height: 100svh; display: grid; place-items: center; padding: 16px; }
-.intro-inner { display: grid; gap: 20px; justify-items: center; max-width: min(100%, 1000px); }
-.intro-logo { width: min(95%, 1000px); height: auto; display: block; }
-.intro-nav { justify-content: flex-end; }
-#btn-back-1 { display: none !important; }
-
-/* Screen 2 */
-screen2-wrapper { max-width: min(100%, 1100px); margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
-.disclaimer-figure { margin: 0; }
-.screen2-image { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,0.35); display: block; }
-
-/* Screen 3 */
-.screen3-wrapper { max-width: 960px; margin: 0 auto; padding: 16px; display: grid; gap: 24px; }
-.choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
-.choice-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--ink); text-align: left; cursor: pointer; display: grid; gap: 8px; transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease; }
-.choice-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.3); }
-.choice-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.choice-icon { font-size: 24px; opacity: 0.9; }
-.choice-title { font-weight: 800; letter-spacing: 0.08em; }
-.choice-sub { color: var(--muted); font-size: 14px; }
-
-/* Filters */
-.filters-wrapper { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; padding: 16px; }
-.filters-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.layer-hint { color: var(--muted); font-size: 14px; }
-.filters-section { display: grid; gap: 16px; }
-.group { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
-.group-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-.group-title { font-weight: 800; letter-spacing: 0.08em; }
-.badges { display: inline-flex; gap: 6px; align-items: center; }
-.badge { font-size: 11px; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
-
-.field { display: grid; gap: 6px; margin: 10px 0; }
-.field-label { font-size: 13px; letter-spacing: 0.06em; }
-.field-controls { display: flex; flex-wrap: wrap; gap: 8px; }
-
-/* Controls */
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { padding: 8px 12px; border-radius: 999px; background: #201a6b; border: 1px solid var(--line); color: var(--ink); cursor: pointer; }
-.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
-
-.toggle { display: inline-flex; align-items: center; gap: 8px; }
-.toggle input { accent-color: var(--accent); }
-
-select, input[type="number"], input[type="text"] { background: #201a6b; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-width: 180px; }
-
-/* Disabled/locked */
-.is-disabled { opacity: 0.55; }
-.is-disabled .chip, .is-disabled select, .is-disabled input { pointer-events: none; cursor: not-allowed; }
-.lock { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 12px; }
-.lock .icon { font-size: 14px; }
-.info-btn { background: transparent; border: none; color: var(--muted); cursor: help; }
-.info-btn:focus-visible { outline: 2px solid var(--accent); border-radius: 6px; }
-
-/* More filters */
-.filters-more { display: grid; gap: 8px; }
-.more-panel { background: var(--panel); border: 1px dashed var(--line); border-radius: 12px; padding: 12px; }
-
-/* Results */
-.results-wrapper { max-width: 900px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
-.results-summary { background: #201a6b; border: 1px solid var(--line); color: var(--ink); padding: 12px; border-radius: 10px; white-space: pre-wrap; }
-
-/* Nav row */
-.nav-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
-.btn { appearance: none; border: none; border-radius: 10px; padding: 12px 18px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: transform 120ms ease, box-shadow 120ms ease; }
-.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 18px rgba(255,122,89,0.35); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(255,122,89,0.45); }
-.btn-secondary { background: #2a246f; color: var(--ink); border: 1px solid var(--line); }
-.btn-secondary:hover { transform: translateY(-1px); }
-.btn-tertiary { background: transparent; color: var(--ink); border: 1px dashed var(--line); }
-.btn-tertiary:hover { transform: translateY(-1px); }
-.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
-
-/* A11y */
-.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 1px, 1px); white-space: nowrap; border: 0; }
-
-/* Responsive */
-@media (max-width: 720px) {
-  .choice-grid { grid-template-columns: 1fr; }
-  select, input[type="number"], input[type="text"] { min-width: 140px; }
+function updateHeaderVisibility() {
+  const header = document.getElementById('app-header');
+  const index = SCREENS.indexOf(currentScreen);
+  // Header zichtbaar vanaf scherm 3
+  if (index >= 2) header.classList.remove('hidden'); else header.classList.add('hidden');
 }
 
+function updateNavStates() {
+  // Screen 1 back disabled
+  const back1 = document.getElementById('btn-back-1');
+  if (back1) { back1.disabled = true; back1.setAttribute('aria-disabled','true'); }
+
+  // Screen 3 Verder afhankelijk van keuze
+  const next3 = document.getElementById('btn-next-3');
+  if (next3) { const enabled = !!lastChoice; next3.disabled = !enabled; next3.setAttribute('aria-disabled', String(!enabled)); }
+
+  // On results, next disabled
+  const next5 = document.getElementById('btn-next-5');
+  if (next5) { next5.disabled = true; next5.setAttribute('aria-disabled','true'); }
+}
+
+function layerActiveForPath(layer, path) {
+  if (layer === 'basis') return true;
+  if (layer === 'uitgebreid') return path === 'vergelijk';
+  if (layer === 'expert') return false;
+  return false;
+}
+
+function createFieldEl(field, path) {
+  const isActive = layerActiveForPath(field.layer, path);
+  const isOverrideDisabled = filtersConfig.overrides && filtersConfig.overrides[field.id]?.forceDisabled;
+  const active = isActive && !isOverrideDisabled;
+  const group = document.createElement('div');
+  group.className = 'field' + (active ? '' : ' is-disabled');
+
+  const label = document.createElement('div'); label.className = 'field-label'; label.textContent = field.label;
+  const meta = document.createElement('div'); meta.className = 'badges';
+  const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = field.layer.toUpperCase(); meta.appendChild(badge);
+
+  if (!active) {
+    const lock = document.createElement('span'); lock.className = 'lock';
+    const icon = document.createElement('span'); icon.className = 'icon'; icon.textContent = '🔒'; lock.appendChild(icon);
+    const txt = document.createElement('span'); txt.textContent = (filtersConfig.overrides && filtersConfig.overrides[field.id]?.tooltip) || `Beschikbaar in ${field.layer.toUpperCase()}`; lock.appendChild(txt);
+    const info = document.createElement('button'); info.className = 'info-btn'; info.type = 'button'; info.setAttribute('aria-label','Meer info'); info.title = txt.textContent || txt; info.textContent = 'ⓘ'; lock.appendChild(info);
+    meta.appendChild(lock);
+  }
+
+  const header = document.createElement('div'); header.style.display='flex'; header.style.alignItems='center'; header.style.justifyContent='space-between'; header.style.gap='8px';
+  header.appendChild(label); header.appendChild(meta); group.appendChild(header);
+
+  const controls = document.createElement('div'); controls.className = 'field-controls';
+  function disableControls(el){ if(!active){ el.setAttribute('disabled',''); el.setAttribute('aria-disabled','true'); }}
+
+  switch(field.type){
+    case 'chips':{ const wrap=document.createElement('div'); wrap.className='chips'; (field.options||[]).forEach(opt=>{ const chip=document.createElement('button'); chip.type='button'; chip.className='chip'; chip.setAttribute('aria-pressed','false'); chip.textContent=opt; if(active){ chip.addEventListener('click',()=>{ const p=chip.getAttribute('aria-pressed')==='true'; chip.setAttribute('aria-pressed', String(!p)); }); } else { chip.style.pointerEvents='none'; chip.style.cursor='not-allowed'; } wrap.appendChild(chip); }); controls.appendChild(wrap); break; }
+    case 'checkbox':{ (field.options||[]).forEach(opt=>{ const lab=document.createElement('label'); lab.className='toggle'; const input=document.createElement('input'); input.type='checkbox'; disableControls(input); const span=document.createElement('span'); span.textContent=opt; lab.appendChild(input); lab.appendChild(span); controls.appendChild(lab); }); break; }
+    case 'toggle':{ const lab=document.createElement('label'); lab.className='toggle'; const input=document.createElement('input'); input.type='checkbox'; disableControls(input); const span=document.createElement('span'); span.textContent='JA/NEE'; lab.appendChild(input); lab.appendChild(span); controls.appendChild(lab); break; }
+    case 'select':{ const sel=document.createElement('select'); (field.options||[]).forEach(opt=>{ const o=document.createElement('option'); o.value=String(opt); o.textContent=String(opt); sel.appendChild(o); }); disableControls(sel); controls.appendChild(sel); break; }
+    case 'multi-select':{ const wrap=document.createElement('div'); wrap.className='chips'; (field.options||[]).forEach(opt=>{ const chip=document.createElement('button'); chip.type='button'; chip.className='chip'; chip.setAttribute('aria-pressed','false'); chip.textContent=opt; if(active){ chip.addEventListener('click',()=>{ const p=chip.getAttribute('aria-pressed')==='true'; chip.setAttribute('aria-pressed', String(!p)); }); } else { chip.style.pointerEvents='none'; chip.style.cursor='not-allowed'; } wrap.appendChild(chip); }); controls.appendChild(wrap); break; }
+    case 'number':{ const input=document.createElement('input'); input.type='number'; input.placeholder='0'; disableControls(input); controls.appendChild(input); break; }
+    case 'text':{ const input=document.createElement('input'); input.type='text'; input.placeholder='—'; disableControls(input); controls.appendChild(input); break; }
+    default:{ const input=document.createElement('input'); input.type='text'; disableControls(input); controls.appendChild(input); break; }
+  }
+
+  group.appendChild(controls);
+  return group;
+}
+
+function renderFiltersForPath(path){
+  const basicMount=document.getElementById(`filters-${path}-basic`);
+  const moreMount=document.getElementById(`filters-${path}-more`);
+  if(!basicMount||!moreMount) return; basicMount.innerHTML=''; moreMount.innerHTML='';
+  const groups=filtersConfig.groups; const fields=filtersConfig.fields;
+  groups.forEach(g=>{
+    const basicFields=fields.filter(f=>f.group===g.id && f.layer==='basis');
+    const moreFields=fields.filter(f=>f.group===g.id && f.layer!=='basis');
+    if(basicFields.length){ const groupEl=document.createElement('section'); groupEl.className='group'; const head=document.createElement('div'); head.className='group-header'; const title=document.createElement('div'); title.className='group-title'; title.textContent=g.label; const badges=document.createElement('div'); badges.className='badges'; const b=document.createElement('span'); b.className='badge'; b.textContent='BASIS'; badges.appendChild(b); head.appendChild(title); head.appendChild(badges); groupEl.appendChild(head); basicFields.forEach(f=> groupEl.appendChild(createFieldEl(f, path))); basicMount.appendChild(groupEl); }
+    if(moreFields.length){ const groupEl=document.createElement('section'); groupEl.className='group'; const head=document.createElement('div'); head.className='group-header'; const title=document.createElement('div'); title.className='group-title'; title.textContent=g.label; const badges=document.createElement('div'); badges.className='badges'; const hasU=moreFields.some(f=>f.layer==='uitgebreid'); const hasE=moreFields.some(f=>f.layer==='expert'); if(hasU){ const b=document.createElement('span'); b.className='badge'; b.textContent='UITGEBREID'; badges.appendChild(b); } if(hasE){ const b=document.createElement('span'); b.className='badge'; b.textContent='EXPERT'; badges.appendChild(b); } head.appendChild(title); head.appendChild(badges); groupEl.appendChild(head); moreFields.forEach(f=> groupEl.appendChild(createFieldEl(f, path))); moreMount.appendChild(groupEl); }
+  });
+}
+
+function summarizeSelections(){
+  const summary=[];
+  document.querySelectorAll('.chip[aria-pressed="true"]').forEach(chip=> summary.push(`• ${chip.textContent}`));
+  document.querySelectorAll('.field:not(.is-disabled) .field-controls input, .field:not(.is-disabled) .field-controls select').forEach(input=>{
+    if(input.type==='checkbox'){ if(input.checked) summary.push(`• ${input.closest('.field').querySelector('.field-label').textContent.trim()}: JA`); }
+    else if(input.tagName==='SELECT'){ const label=input.closest('.field').querySelector('.field-label').textContent.trim(); summary.push(`• ${label}: ${input.value}`); }
+    else if(input.type==='number' && input.value){ const label=input.closest('.field').querySelector('.field-label').textContent.trim(); summary.push(`• ${label}: ${input.value}`); }
+    else if(input.type==='text' && input.value){ const label=input.closest('.field').querySelector('.field-label').textContent.trim(); summary.push(`• ${label}: ${input.value}`); }
+  });
+  const out=document.getElementById('selected-filters'); if(out) out.textContent = summary.length ? summary.join('
+') : 'Nog geen filters geselecteerd.';
+}
+
+function setupEvents(){
+  // Screen 1
+  document.getElementById('btn-next-1')?.addEventListener('click', ()=> goTo('screen-2'));
+
+  // Screen 2
+  document.getElementById('btn-back-2')?.addEventListener('click', ()=> goTo('screen-1'));
+  document.getElementById('btn-next-2')?.addEventListener('click', ()=> goTo('screen-3'));
+
+  // Screen 3
+  document.getElementById('btn-back-3')?.addEventListener('click', ()=> goTo('screen-2'));
+  document.getElementById('btn-next-3')?.addEventListener('click', ()=>{ if(lastChoice==='zoek') goTo('screen-4-zoek'); else if(lastChoice==='vergelijk') goTo('screen-4-vergelijk'); });
+  document.getElementById('card-zoek')?.addEventListener('click', ()=>{ lastChoice='zoek'; updateNavStates(); renderFiltersForPath('zoek'); goTo('screen-4-zoek'); });
+  document.getElementById('card-vergelijk')?.addEventListener('click', ()=>{ lastChoice='vergelijk'; updateNavStates(); renderFiltersForPath('vergelijk'); goTo('screen-4-vergelijk'); });
+
+  // Filters – IK ZOEK
+  document.getElementById('btn-back-4-zoek')?.addEventListener('click', ()=> goTo('screen-3'));
+  document.getElementById('btn-next-4-zoek')?.addEventListener('click', ()=>{ summarizeSelections(); goTo('screen-5-results'); });
+  document.getElementById('toggle-more-zoek')?.addEventListener('click', (e)=>{ const panel=document.getElementById('filters-zoek-more'); const expanded=e.currentTarget.getAttribute('aria-expanded')==='true'; e.currentTarget.setAttribute('aria-expanded', String(!expanded)); panel.hidden = expanded; });
+
+  // Filters – IK VERGELIJK
+  document.getElementById('btn-back-4-vergelijk')?.addEventListener('click', ()=> goTo('screen-3'));
+  document.getElementById('btn-next-4-vergelijk')?.addEventListener('click', ()=>{ summarizeSelections(); goTo('screen-5-results'); });
+  document.getElementById('toggle-more-vergelijk')?.addEventListener('click', (e)=>{ const panel=document.getElementById('filters-vergelijk-more'); const expanded=e.currentTarget.getAttribute('aria-expanded')==='true'; e.currentTarget.setAttribute('aria-expanded', String(!expanded)); panel.hidden = expanded; });
+
+  // Results
+  document.getElementById('btn-back-5')?.addEventListener('click', ()=>{ if(lastChoice==='zoek') goTo('screen-4-zoek'); else if(lastChoice==='vergelijk') goTo('screen-4-vergelijk'); });
+}
+
+async function bootstrap(){
+  try{ const resp = await fetch('data/filters.json'); filtersConfig = await resp.json(); }
+  catch(e){ console.error('Kon filters.json niet laden', e); filtersConfig = { groups: [], fields: [], overrides: {} }; }
+  setupEvents(); updateHeaderVisibility(); updateNavStates();
+}
+
+document.addEventListener('DOMContentLoaded', bootstrap);
