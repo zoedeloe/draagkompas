@@ -111,7 +111,7 @@ select, input[type="number"], input[type="text"] { background: #201a6b; color: v
 
 /* --- Scherm 1 tweaks --- */
 .intro-logo {
-  width: min(95%, 1250px);   /* maak groter: schaal tot 900px of 95% schermbreedte */
+  width: min(95%, 1250px);   /* maak groter: schaal tot 1200px of 95% schermbreedte */
   height: auto;
   display: block;
 }
