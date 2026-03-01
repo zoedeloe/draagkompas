@@ -1,4 +1,3 @@
-
 /* ====== Basis ====== */
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -100,4 +99,12 @@ select, input[type="number"], input[type="text"] { background: #201a6b; color: v
 @media (max-width: 720px) {
   .choice-grid { grid-template-columns: 1fr; }
   select, input[type="number"], input[type="text"] { min-width: 140px; }
+}
+
+/* Header-icoon linksboven vanaf scherm 3 */
+.logo-img {
+  height: 28px;           /* pas aan naar smaak: 24–36px */
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
