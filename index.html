@@ -1,39 +1,29 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
-
-  <!-- Stylesheet -->
-  styles.css?v=10
+  <link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
-
   <!-- Header (icoon vanaf scherm 3) -->
   <header id="app-header" class="app-header hidden" aria-label="App header">
     <div class="brand">
-      assets/img/header-icon.png
+      <img src="assets/img/header-icon.png" alt="Draagkompas" class="logo-img" />
     </div>
   </header>
 
   <main id="app" class="app">
-
     <!-- SCREEN 1: Intro -->
     <section id="screen-1" class="screen active" aria-label="Intro">
-      <div class="screen1-wrapper" style="min-height:100svh;display:grid;place-items:center;padding:16px;">
-        <div style="display:grid;gap:20px;justify-items:center;max-width:min(100%,900px);">
-
-          <!-- Groot hoofdlogo -->
-          assets/img/logo.png
-
-          <!-- Navigatie -->
-          <div class="nav-row" style="width:100%;max-width:420px;justify-content:flex-end;">
-            <button id="btn-back-1" class="btn btn-secondary" disabled aria-disabled="true" style="display:none;">TERUG</button>
+      <div class="screen1-wrapper">
+        <div class="intro-inner">
+          <img src="assets/img/logo.png" alt="Draagkompas logo" class="intro-logo" />
+          <div class="nav-row intro-nav">
+            <button id="btn-back-1" class="btn btn-secondary" disabled aria-disabled="true">TERUG</button>
             <button id="btn-next-1" class="btn btn-primary">VERDER</button>
           </div>
-
         </div>
       </div>
     </section>
@@ -42,7 +32,7 @@
     <section id="screen-2" class="screen" aria-label="Disclaimer">
       <div class="screen2-wrapper">
         <figure class="disclaimer-figure">
-          assets/img/draagkompas-disclaimer.png
+          <img src="assets/img/draagkompas-disclaimer.png" alt="Belangrijke informatie en disclaimer voor Draagkompas" class="screen2-image" />
         </figure>
         <div class="nav-row">
           <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
@@ -55,21 +45,17 @@
     <section id="screen-3" class="screen" aria-label="Maak je keuze">
       <div class="screen3-wrapper">
         <div class="choice-grid" role="group" aria-label="Kies je pad">
-
-          <button id="card-zoek" class="choice-card">
-            <span class="choice-icon">🔍</span>
+          <button id="card-zoek" class="choice-card" aria-label="IK ZOEK – Vind een draagmiddel op maat van jouw baby.">
+            <span class="choice-icon" aria-hidden="true">🔍</span>
             <span class="choice-title">IK ZOEK</span>
             <span class="choice-sub">Vind een draagmiddel op maat van jouw baby.</span>
           </button>
-
-          <button id="card-vergelijk" class="choice-card">
-            <span class="choice-icon">⚖️</span>
+          <button id="card-vergelijk" class="choice-card" aria-label="IK VERGELIJK – Filter op kenmerken en vergelijk dragers.">
+            <span class="choice-icon" aria-hidden="true">⚖️</span>
             <span class="choice-title">IK VERGELIJK</span>
             <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
           </button>
-
         </div>
-
         <div class="nav-row">
           <button id="btn-back-3" class="btn btn-secondary">TERUG</button>
           <button id="btn-next-3" class="btn btn-primary" disabled aria-disabled="true">VERDER</button>
@@ -78,20 +64,17 @@
     </section>
 
     <!-- SCREEN 4A: IK ZOEK filters -->
-    <section id="screen-4-zoek" class="screen">
+    <section id="screen-4-zoek" class="screen" aria-label="Filters – Ik zoek">
       <div class="filters-wrapper">
         <div class="filters-head">
           <h2 class="sr-only">Filters – IK ZOEK</h2>
-          <div class="layer-hint">BASIS zichtbaar; geavanceerde filters zijn grijs (🔒).</div>
+          <div class="layer-hint">BASIS zichtbaar; geavanceerde filters zijn grijs (🔒) en niet aanklikbaar.</div>
         </div>
-
         <div id="filters-zoek-basic" class="filters-section"></div>
-
         <div class="filters-more">
-          <button class="btn btn-tertiary" id="toggle-more-zoek" aria-expanded="false">MEER FILTERS</button>
+          <button class="btn btn-tertiary" id="toggle-more-zoek" aria-expanded="false" aria-controls="filters-zoek-more">MEER FILTERS</button>
           <div id="filters-zoek-more" class="more-panel" hidden></div>
         </div>
-
         <div class="nav-row">
           <button id="btn-back-4-zoek" class="btn btn-secondary">TERUG</button>
           <button id="btn-next-4-zoek" class="btn btn-primary">VERDER</button>
@@ -100,20 +83,17 @@
     </section>
 
     <!-- SCREEN 4B: IK VERGELIJK filters -->
-    <section id="screen-4-vergelijk" class="screen">
+    <section id="screen-4-vergelijk" class="screen" aria-label="Filters – Ik vergelijk">
       <div class="filters-wrapper">
         <div class="filters-head">
           <h2 class="sr-only">Filters – IK VERGELIJK</h2>
-          <div class="layer-hint">BASIS + UITGEBREID zichtbaar; EXPERT is grijs (🔒).</div>
+          <div class="layer-hint">BASIS + UITGEBREID zichtbaar; EXPERT is grijs (🔒) en niet aanklikbaar.</div>
         </div>
-
         <div id="filters-vergelijk-basic" class="filters-section"></div>
-
         <div class="filters-more">
-          <button class="btn btn-tertiary" id="toggle-more-vergelijk" aria-expanded="false">MEER FILTERS</button>
+          <button class="btn btn-tertiary" id="toggle-more-vergelijk" aria-expanded="false" aria-controls="filters-vergelijk-more">MEER FILTERS</button>
           <div id="filters-vergelijk-more" class="more-panel" hidden></div>
         </div>
-
         <div class="nav-row">
           <button id="btn-back-4-vergelijk" class="btn btn-secondary">TERUG</button>
           <button id="btn-next-4-vergelijk" class="btn btn-primary">VERDER</button>
@@ -122,9 +102,10 @@
     </section>
 
     <!-- SCREEN 5: Resultaten -->
-    <section id="screen-5-results" class="screen">
+    <section id="screen-5-results" class="screen" aria-label="Resultaten">
       <div class="results-wrapper">
         <h2>RESULTATEN</h2>
+        <p>Hier verschijnen later de resultaten op basis van je filters. Voor nu tonen we een samenvatting van je keuzes.</p>
         <pre id="selected-filters" class="results-summary" aria-live="polite"></pre>
         <div class="nav-row">
           <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
@@ -132,10 +113,8 @@
         </div>
       </div>
     </section>
-
   </main>
 
-  <!-- Script -->
-  app.js?v=10</script>
+  <script src="app.js?v=11" defer></script>
 </body>
 </html>
