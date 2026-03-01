@@ -1,290 +1,73 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Draagkompas</title>
-
-  <!-- Ingebouwde CSS (geen extern styles.css nodig) -->
+  <title>Draagkompas – TEST</title>
   <style>
-    /* ====== Basis ====== */
+    /* Mini-stijl, ingebouwd */
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    html, body { height:100%; }
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
-      color: #ffffff;
-      background: #0f0b3a; /* paarsblauwe achtergrond */
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:#0f0b3a; color:#fff;
     }
-    :root{
-      --bg:#0f0b3a; --card:#15104a; --ink:#fff; --muted:#cfd3ff; --accent:#ff7a59; --accent-ink:#1a1446; --line:rgba(255,255,255,0.15); --panel:#1b165c;
-    }
-
-    /* Header (verborgen t/m scherm 2) */
-    .app-header {
-      position: sticky; top: 0; left: 0; right: 0; height: 56px;
-      display: flex; align-items: center; padding: 0 16px;
-      background: var(--panel); border-bottom: 1px solid var(--line); z-index: 10;
-    }
-    .brand{ display:flex; align-items:center; gap:8px; color:var(--ink); font-weight:700; letter-spacing:0.08em; }
-    .logo-img{ height:28px; width:auto; display:block; object-fit:contain; }
-    .hidden { display: none !important; }
-
-    /* Screens */
-    .app { min-height: 100svh; display: grid; place-items: stretch; }
-    .screen { min-height: 100svh; padding: 16px; color: var(--ink); display: none; }
-    .screen.active { display: block; }
-
-    /* Scherm 1 */
-    .screen1-wrapper { min-height:100svh; display:grid; place-items:center; padding:16px; }
-    .intro-inner { display:grid; gap:20px; justify-items:center; max-width:min(100%, 1000px); }
-    .intro-logo { width: min(95%, 1000px); height:auto; display:block; }
-    .intro-nav { justify-content:flex-end; }
-    #btn-back-1 { display:none !important; } /* TERUG onzichtbaar op scherm 1 */
-
-    /* Scherm 2 */
-    .screen2-wrapper { max-width:min(100%,1100px); margin:0 auto; display:grid; gap:16px; }
-    .disclaimer-figure{ margin:0; }
-    .screen2-image { width:100%; height:auto; border-radius:12px; box-shadow:0 8px 28px rgba(0,0,0,0.35); display:block; }
-
-    /* Scherm 3 */
-    .screen3-wrapper { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:24px; }
-    .choice-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:16px; }
-    .choice-card {
-      background: var(--card); border:1px solid var(--line); border-radius:14px; padding:20px;
-      color:var(--ink); text-align:left; cursor:pointer; display:grid; gap:8px;
-      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
-    }
-    .choice-card:hover { transform: translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,0.35); border-color:rgba(255,255,255,0.3); }
-    .choice-card:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
-    .choice-icon{ font-size:24px; opacity:0.9; }
-    .choice-title{ font-weight:800; letter-spacing:0.08em; }
-    .choice-sub{ color:var(--muted); font-size:14px; }
-
-    /* Placeholder filters / resultaten */
-    .filters-wrapper { max-width:1100px; margin:0 auto; display:grid; gap:16px; padding:16px; }
-    .layer-hint { color:var(--muted); font-size:14px; }
-    .results-wrapper { max-width:900px; margin:0 auto; padding:16px; display:grid; gap:16px; }
-    .results-summary { background:#201a6b; border:1px solid var(--line); color:var(--ink); padding:12px; border-radius:10px; white-space:pre-wrap; }
-
-    /* Knoppen & rijen */
-    .nav-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:8px; }
+    .screen { display:none; min-height:100svh; padding:16px; }
+    .screen.active { display:block; }
+    .center { min-height:100svh; display:grid; place-items:center; }
+    .logo { width:min(95%, 1000px); height:auto; display:block; }
+    .nav { display:flex; justify-content:flex-end; gap:12px; margin-top:16px; }
     .btn {
-      appearance:none; border:none; border-radius:10px; padding:12px 18px; font-weight:700; letter-spacing:0.08em;
-      cursor:pointer; transition:transform 120ms ease, box-shadow 120ms ease;
+      appearance:none; border:0; border-radius:10px; padding:12px 18px;
+      font-weight:700; letter-spacing:.06em; cursor:pointer;
+      background:#ff7a59; color:#1a1446;
     }
-    .btn:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
-    .btn-primary { background:var(--accent); color:var(--accent-ink); box-shadow:0 6px 18px rgba(255,122,89,0.35); }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow:0 10px 24px rgba(255,122,89,0.45); }
-    .btn-secondary { background:#2a246f; color:var(--ink); border:1px solid var(--line); }
-    .btn-secondary:hover { transform: translateY(-1px); }
-    .btn[disabled], .btn[aria-disabled="true"] { opacity:0.5; cursor:not-allowed; box-shadow:none; transform:none; }
-
-    /* A11y */
-    .sr-only { position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
-
-    /* Responsief */
-    @media (max-width: 720px) {
-      .choice-grid { grid-template-columns: 1fr; }
-    }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .btn-secondary { background:#2a246f; color:#fff; }
+    figure { margin:0; }
+    img { max-width:100%; height:auto; display:block; }
   </style>
 </head>
 <body>
 
-  <!-- Header (icoon pas vanaf scherm 3 zichtbaar) -->
-  <header id="app-header" class="app-header hidden" aria-label="App header">
-    <div class="brand">
-      <img src="assets/img/header-icon.png" alt="Draagkompas" class="logo-img" />
+  <!-- SCHERM 1 (logo centraal, alleen VERDER knop) -->
+  <section id="s1" class="screen active">
+    <div class="center">
+      <div style="display:grid; gap:20px; justify-items:center; max-width:1000px; width:100%;">
+        <img src="assets/img/logo.png" alt="Draagkompas logo" class="logo">
+        <div class="nav">
+          <!-- TERUG bestaat hier niet -->
+          <button id="go" class="btn">VERDER</button>
+        </div>
+      </div>
     </div>
-  </header>
+  </section>
 
-  <main id="app" class="app">
-
-    <!-- SCHERM 1 -->
-    <section id="screen-1" class="screen active" aria-label="Intro">
-      <div class="screen1-wrapper">
-        <div class="intro-inner">
-          <img src="assets/img/logo.png" alt="Draagkompas logo" class="intro-logo" />
-          <div class="nav-row intro-nav">
-            <button id="btn-back-1" class="btn btn-secondary" disabled aria-disabled="true">TERUG</button>
-            <button id="btn-next-1" class="btn btn-primary">VERDER</button>
-          </div>
-        </div>
+  <!-- SCHERM 2 (disclaimerafbeelding + TERUG/VERDER) -->
+  <section id="s2" class="screen">
+    <div style="max-width:1100px; margin:0 auto;">
+      <figure><img src="assets/img/draagkompas-disclaimer.png" alt="Disclaimer"></figure>
+      <div class="nav">
+        <button id="back2" class="btn btn-secondary">TERUG</button>
+        <button id="next2" class="btn">VERDER</button>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- SCHERM 2 -->
-    <section id="screen-2" class="screen" aria-label="Disclaimer">
-      <div class="screen2-wrapper">
-        <figure class="disclaimer-figure">
-          <img src="assets/img/draagkompas-disclaimer.png" alt="Belangrijke informatie en disclaimer voor Draagkompas" class="screen2-image" />
-        </figure>
-        <div class="nav-row">
-          <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
-          <button id="btn-next-2" class="btn btn-primary">VERDER</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- SCHERM 3 -->
-    <section id="screen-3" class="screen" aria-label="Maak je keuze">
-      <div class="screen3-wrapper">
-        <div class="choice-grid" role="group" aria-label="Kies je pad">
-          <button id="card-zoek" class="choice-card" aria-label="IK ZOEK – Vind een draagmiddel op maat van jouw baby.">
-            <span class="choice-icon" aria-hidden="true">🔍</span>
-            <span class="choice-title">IK ZOEK</span>
-            <span class="choice-sub">Vind een draagmiddel op maat van jouw baby.</span>
-          </button>
-          <button id="card-vergelijk" class="choice-card" aria-label="IK VERGELIJK – Filter op kenmerken en vergelijk dragers.">
-            <span class="choice-icon" aria-hidden="true">⚖️</span>
-            <span class="choice-title">IK VERGELIJK</span>
-            <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
-          </button>
-        </div>
-        <div class="nav-row">
-          <button id="btn-back-3" class="btn btn-secondary">TERUG</button>
-          <button id="btn-next-3" class="btn btn-primary" disabled aria-disabled="true">VERDER</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- SCHERM 4A -->
-    <section id="screen-4-zoek" class="screen" aria-label="Filters – Ik zoek">
-      <div class="filters-wrapper">
-        <div class="filters-head">
-          <h2 class="sr-only">Filters – IK ZOEK</h2>
-          <div class="layer-hint">BASIS zichtbaar; geavanceerde filters zijn grijs en niet aanklikbaar.</div>
-        </div>
-        <!-- (placeholder) -->
-        <p>Filters voor ouders (placeholder). Klik <b>VERDER</b> om de flow te testen.</p>
-        <div class="nav-row">
-          <button id="btn-back-4-zoek" class="btn btn-secondary">TERUG</button>
-          <button id="btn-next-4-zoek" class="btn btn-primary">VERDER</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- SCHERM 4B -->
-    <section id="screen-4-vergelijk" class="screen" aria-label="Filters – Ik vergelijk">
-      <div class="filters-wrapper">
-        <div class="filters-head">
-          <h2 class="sr-only">Filters – IK VERGELIJK</h2>
-          <div class="layer-hint">BASIS + UITGEBREID zichtbaar; EXPERT grijs en niet aanklikbaar.</div>
-        </div>
-        <!-- (placeholder) -->
-        <p>Filters voor consulenten (placeholder). Klik <b>VERDER</b> om de flow te testen.</p>
-        <div class="nav-row">
-          <button id="btn-back-4-vergelijk" class="btn btn-secondary">TERUG</button>
-          <button id="btn-next-4-vergelijk" class="btn btn-primary">VERDER</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- SCHERM 5 -->
-    <section id="screen-5-results" class="screen" aria-label="Resultaten">
-      <div class="results-wrapper">
-        <h2>RESULTATEN</h2>
-        <p>Dit is een placeholder. Hier kunnen later lijst/vergelijkingen komen.</p>
-        <pre id="selected-filters" class="results-summary" aria-live="polite">Nog geen filters geselecteerd.</pre>
-        <div class="nav-row">
-          <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
-          <button id="btn-next-5" class="btn btn-primary" disabled aria-disabled="true">VERDER</button>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Ingebouwde JS (geen extern app.js nodig) -->
   <script>
-    const SCREENS = ["screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
-    let currentScreen = "screen-1";
-    let lastChoice = null;
-
-    function goTo(id){
-      SCREENS.forEach(s => {
-        const el = document.getElementById(s);
-        if (el) el.classList.toggle('active', s === id);
-      });
-      currentScreen = id;
-      updateHeaderVisibility();
-      updateNavStates();
-    }
-
-    function updateHeaderVisibility(){
-      const header = document.getElementById('app-header');
-      const index = SCREENS.indexOf(currentScreen);
-      // Header (icoon) pas vanaf scherm 3
-      if (index >= 2) header.classList.remove('hidden'); else header.classList.add('hidden');
-    }
-
-    function updateNavStates(){
-      // Scherm 1: TERUG blijft disabled/verborgen
-      const back1 = document.getElementById('btn-back-1');
-      if (back1) { back1.disabled = true; back1.setAttribute('aria-disabled','true'); }
-
-      // Scherm 3: VERDER pas actief na keuze
-      const next3 = document.getElementById('btn-next-3');
-      if (next3) {
-        const enabled = !!lastChoice;
-        next3.disabled = !enabled;
-        next3.setAttribute('aria-disabled', String(!enabled));
-      }
-
-      // Scherm 5: VERDER blijft disabled
-      const next5 = document.getElementById('btn-next-5');
-      if (next5) { next5.disabled = true; next5.setAttribute('aria-disabled','true'); }
-    }
-
-    function summarizeSelections(){
-      // (Placeholder) toon welke kaart gekozen is
-      const out = document.getElementById('selected-filters');
-      if (!out) return;
-      out.textContent = lastChoice
-        ? `• Pad: ${lastChoice === 'zoek' ? 'IK ZOEK' : 'IK VERGELIJK'}`
-        : 'Nog geen filters geselecteerd.';
-    }
-
-    function setupEvents(){
-      // Scherm 1
-      document.getElementById('btn-next-1')?.addEventListener('click', () => goTo('screen-2'));
-
-      // Scherm 2
-      document.getElementById('btn-back-2')?.addEventListener('click', () => goTo('screen-1'));
-      document.getElementById('btn-next-2')?.addEventListener('click', () => goTo('screen-3'));
-
-      // Scherm 3
-      document.getElementById('btn-back-3')?.addEventListener('click', () => goTo('screen-2'));
-      document.getElementById('btn-next-3')?.addEventListener('click', () => {
-        if (lastChoice === 'zoek') goTo('screen-4-zoek');
-        else if (lastChoice === 'vergelijk') goTo('screen-4-vergelijk');
-      });
-      document.getElementById('card-zoek')?.addEventListener('click', () => {
-        lastChoice = 'zoek'; updateNavStates(); goTo('screen-4-zoek');
-      });
-      document.getElementById('card-vergelijk')?.addEventListener('click', () => {
-        lastChoice = 'vergelijk'; updateNavStates(); goTo('screen-4-vergelijk');
-      });
-
-      // Scherm 4A
-      document.getElementById('btn-back-4-zoek')?.addEventListener('click', () => goTo('screen-3'));
-      document.getElementById('btn-next-4-zoek')?.addEventListener('click', () => { summarizeSelections(); goTo('screen-5-results'); });
-
-      // Scherm 4B
-      document.getElementById('btn-back-4-vergelijk')?.addEventListener('click', () => goTo('screen-3'));
-      document.getElementById('btn-next-4-vergelijk')?.addEventListener('click', () => { summarizeSelections(); goTo('screen-5-results'); });
-
-      // Scherm 5
-      document.getElementById('btn-back-5')?.addEventListener('click', () => {
-        if (lastChoice === 'zoek') goTo('screen-4-zoek');
-        else if (lastChoice === 'vergelijk') goTo('screen-4-vergelijk');
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      setupEvents();
-      updateHeaderVisibility();
-      updateNavStates();
+    // Mini script, ingebouwd
+    const s1 = document.getElementById('s1');
+    const s2 = document.getElementById('s2');
+    document.getElementById('go').addEventListener('click', () => {
+      s1.classList.remove('active'); s2.classList.add('active');
+    });
+    document.getElementById('back2').addEventListener('click', () => {
+      s2.classList.remove('active'); s1.classList.add('active');
+    });
+    document.getElementById('next2').addEventListener('click', () => {
+      alert('Test geslaagd: VERDER werkt. Daarna zetten we de rest terug.');
     });
   </script>
 </body>
