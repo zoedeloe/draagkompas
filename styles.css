@@ -119,3 +119,27 @@ select, input[type="number"], input[type="text"] { background: #201a6b; color: v
 #btn-back-1 {
   display: none !important; /* TERUG-knop op scherm 1 verbergen */
 }
+
+/* Logo op scherm 1 groter */
+.intro-logo {
+  width: min(95%, 1000px);
+  height: auto;
+}
+
+/* VERDER-knop op scherm 1 rechts */
+#screen-1 .nav-row {
+  justify-content: flex-end;
+}
+
+/* TERUG-knop op scherm 1 verbergen */
+#btn-back-1 {
+  display: none !important;
+}
+
+/* Header-icoontje */
+.logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
