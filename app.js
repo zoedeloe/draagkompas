@@ -4,7 +4,7 @@
 // Screen 1
 document.getElementById('btn-next-1')?.addEventListener('click', () => goTo('screen-2'));
 
-const SCREENS = ["screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
+const SCREENS = ["screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
 let currentScreen = "screen-2";
 let lastChoice = null; // 'zoek' | 'vergelijk'
 let filtersConfig = null;
