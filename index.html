@@ -4,70 +4,515 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Draagkompas – TEST</title>
+  <title>Draagkompas</title>
+
+  <!-- Ingebouwde CSS -->
   <style>
-    /* Mini-stijl, ingebouwd */
+    /* ====== Basis ====== */
     * { box-sizing: border-box; }
-    html, body { height:100%; }
+    html, body { height: 100%; }
     body {
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:#0f0b3a; color:#fff;
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
+      color: #ffffff;
+      background: #0f0b3a; /* paarsblauwe achtergrond */
     }
-    .screen { display:none; min-height:100svh; padding:16px; }
-    .screen.active { display:block; }
-    .center { min-height:100svh; display:grid; place-items:center; }
-    .logo { width:min(95%, 1000px); height:auto; display:block; }
-    .nav { display:flex; justify-content:flex-end; gap:12px; margin-top:16px; }
+    :root{
+      --bg:#0f0b3a; --card:#15104a; --ink:#fff; --muted:#cfd3ff; --accent:#ff7a59; --accent-ink:#1a1446; --line:rgba(255,255,255,0.15); --panel:#1b165c;
+    }
+
+    /* Header (verborgen t/m scherm 2) */
+    .app-header {
+      position: sticky; top: 0; left: 0; right: 0; height: 56px;
+      display: flex; align-items: center; padding: 0 16px;
+      background: var(--panel); border-bottom: 1px solid var(--line); z-index: 10;
+    }
+    .brand{ display:flex; align-items:center; gap:8px; color:var(--ink); font-weight:700; letter-spacing:0.08em; }
+    .logo-img{ height:28px; width:auto; display:block; object-fit:contain; }
+    .hidden { display: none !important; }
+
+    /* Screens */
+    .app { min-height: 100svh; display: grid; place-items: stretch; }
+    .screen { min-height: 100svh; padding: 16px; color: var(--ink); display: none; }
+    .screen.active { display: block; }
+
+    /* Scherm 1 */
+    .screen1-wrapper { min-height:100svh; display:grid; place-items:center; padding:16px; }
+    .intro-inner { display:grid; gap:20px; justify-items:center; max-width:min(100%, 1100px); }
+    .intro-logo { width: min(95%, 1100px); height:auto; display:block; }
+    .intro-nav { justify-content:flex-end; }
+    #btn-back-1 { display:none !important; } /* TERUG onzichtbaar op scherm 1 */
+
+    /* Scherm 2 */
+    .screen2-wrapper { max-width:min(100%,1100px); margin:0 auto; display:grid; gap:16px; }
+    .disclaimer-figure{ margin:0; }
+    .screen2-image { width:100%; height:auto; border-radius:12px; box-shadow:0 8px 28px rgba(0,0,0,0.35); display:block; }
+
+    /* Scherm 3: keuzetegels */
+    .screen3-wrapper { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:24px; }
+    .choice-grid {
+      display:grid; gap:16px;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    .choice-card {
+      background: var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:24px; color:var(--ink); cursor:pointer; display:grid; gap:10px;
+      min-height: 220px; /* grotere tegels */
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+    }
+    .choice-card:hover { transform: translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,0.35); border-color:rgba(255,255,255,0.3); }
+    .choice-card:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+    .choice-icon{ font-size:28px; opacity:0.9; }
+    .choice-title{ font-size:20px; font-weight:800; letter-spacing:0.08em; }
+    .choice-sub{ color:var(--muted); font-size:14px; }
+
+    /* Filters (scherm 4) */
+    .filters-wrapper { max-width:1100px; margin:0 auto; display:grid; gap:16px; padding:16px; }
+    .filters-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .layer-hint { color:var(--muted); font-size:14px; }
+    .filters-section { display:grid; gap:16px; }
+    .group {
+      background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px;
+    }
+    .group-header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+    .group-title { font-weight:800; letter-spacing:0.08em; }
+    .badges { display:inline-flex; gap:6px; align-items:center; }
+    .badge { font-size:11px; padding:2px 6px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+
+    .field { display:grid; gap:6px; margin:10px 0; }
+    .field-label { font-size:13px; letter-spacing:0.06em; }
+    .field-controls { display:flex; flex-wrap:wrap; gap:8px; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip {
+      padding:8px 12px; border-radius:999px; background:#201a6b; border:1px solid var(--line); color:var(--ink); cursor:pointer;
+    }
+    .chip[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); border-color:transparent; }
+
+    .toggle { display:inline-flex; align-items:center; gap:8px; }
+    .toggle input { accent-color: var(--accent); }
+    select, input[type="number"], input[type="text"] {
+      background:#201a6b; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px 10px; min-width:180px;
+    }
+
+    /* Disabled / lock */
+    .is-disabled { opacity: 0.55; }
+    .is-disabled .chip, .is-disabled select, .is-disabled input { pointer-events:none; cursor:not-allowed; }
+    .lock { display:inline-flex; align-items:center; gap:4px; color:var(--muted); font-size:12px; }
+    .lock .icon { font-size:14px; }
+
+    /* Meer filters */
+    .filters-more { display:grid; gap:8px; }
+    .more-panel { background:var(--panel); border:1px dashed var(--line); border-radius:12px; padding:12px; }
+
+    /* Resultaten placeholder */
+    .results-wrapper { max-width:900px; margin:0 auto; padding:16px; display:grid; gap:16px; }
+    .results-summary { background:#201a6b; border:1px solid var(--line); color:var(--ink); padding:12px; border-radius:10px; white-space:pre-wrap; }
+
+    /* Knoppen & rijen */
+    .nav-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:8px; }
     .btn {
-      appearance:none; border:0; border-radius:10px; padding:12px 18px;
-      font-weight:700; letter-spacing:.06em; cursor:pointer;
-      background:#ff7a59; color:#1a1446;
+      appearance:none; border:none; border-radius:10px; padding:12px 18px; font-weight:700; letter-spacing:0.08em;
+      cursor:pointer; transition:transform 120ms ease, box-shadow 120ms ease;
     }
-    .btn:disabled { opacity:.5; cursor:not-allowed; }
-    .btn-secondary { background:#2a246f; color:#fff; }
-    figure { margin:0; }
-    img { max-width:100%; height:auto; display:block; }
+    .btn:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+    .btn-primary { background:var(--accent); color:var(--accent-ink); box-shadow:0 6px 18px rgba(255,122,89,0.35); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow:0 10px 24px rgba(255,122,89,0.45); }
+    .btn-secondary { background:#2a246f; color:var(--ink); border:1px solid var(--line); }
+    .btn-secondary:hover { transform: translateY(-1px); }
+    .btn-tertiary { background:transparent; color:var(--ink); border:1px dashed var(--line); }
+    .btn-tertiary:hover { transform: translateY(-1px); }
+    .btn[disabled], .btn[aria-disabled="true"] { opacity:0.5; cursor:not-allowed; box-shadow:none; transform:none; }
+
+    /* A11y */
+    .sr-only { position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
+
+    /* Responsief */
+    @media (max-width: 820px) {
+      .choice-card { min-height: 180px; }
+    }
+    @media (max-width: 720px) {
+      .choice-grid { grid-template-columns: 1fr; }
+      .choice-card { min-height: 160px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- SCHERM 1 (logo centraal, alleen VERDER knop) -->
-  <section id="s1" class="screen active">
-    <div class="center">
-      <div style="display:grid; gap:20px; justify-items:center; max-width:1000px; width:100%;">
-        <img src="assets/img/logo.png" alt="Draagkompas logo" class="logo">
-        <div class="nav">
-          <!-- TERUG bestaat hier niet -->
-          <button id="go" class="btn">VERDER</button>
+  <!-- Header (icoon pas vanaf scherm 3 zichtbaar) -->
+  <header id="app-header" class="app-header hidden" aria-label="App header">
+    <div class="brand">
+      <img src="assets/img/header-icon.png" alt="Draagkompas" class="logo-img" />
+    </div>
+  </header>
+
+  <main id="app" class="app">
+
+    <!-- SCHERM 1 -->
+    <section id="screen-1" class="screen active" aria-label="Intro">
+      <div class="screen1-wrapper">
+        <div class="intro-inner">
+          <img src="assets/img/logo.png" alt="Draagkompas logo" class="intro-logo" />
+          <div class="nav-row intro-nav">
+            <button id="btn-back-1" class="btn btn-secondary" disabled aria-disabled="true">TERUG</button>
+            <button id="btn-next-1" class="btn btn-primary">VERDER</button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- SCHERM 2 (disclaimerafbeelding + TERUG/VERDER) -->
-  <section id="s2" class="screen">
-    <div style="max-width:1100px; margin:0 auto;">
-      <figure><img src="assets/img/draagkompas-disclaimer.png" alt="Disclaimer"></figure>
-      <div class="nav">
-        <button id="back2" class="btn btn-secondary">TERUG</button>
-        <button id="next2" class="btn">VERDER</button>
+    <!-- SCHERM 2 -->
+    <section id="screen-2" class="screen" aria-label="Disclaimer">
+      <div class="screen2-wrapper">
+        <figure class="disclaimer-figure">
+          <img src="assets/img/draagkompas-disclaimer.png" alt="Belangrijke informatie en disclaimer voor Draagkompas" class="screen2-image" />
+        </figure>
+        <div class="nav-row">
+          <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
+          <button id="btn-next-2" class="btn btn-primary">VERDER</button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
+    <!-- SCHERM 3 -->
+    <section id="screen-3" class="screen" aria-label="Maak je keuze">
+      <div class="screen3-wrapper">
+        <div class="choice-grid" role="group" aria-label="Kies je pad">
+          <button id="card-zoek" class="choice-card" aria-label="IK ZOEK – Vind een draagmiddel op maat van jouw baby.">
+            <span class="choice-icon" aria-hidden="true">🔍</span>
+            <span class="choice-title">IK ZOEK</span>
+            <span class="choice-sub">Vind een draagmiddel op maat van jouw baby.</span>
+          </button>
+          <button id="card-vergelijk" class="choice-card" aria-label="IK VERGELIJK – Filter op kenmerken en vergelijk dragers.">
+            <span class="choice-icon" aria-hidden="true">⚖️</span>
+            <span class="choice-title">IK VERGELIJK</span>
+            <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button id="btn-back-3" class="btn btn-secondary">TERUG</button>
+          <button id="btn-next-3" class="btn btn-primary" disabled aria-disabled="true">VERDER</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHERM 4A -->
+    <section id="screen-4-zoek" class="screen" aria-label="Filters – Ik zoek">
+      <div class="filters-wrapper">
+        <div class="filters-head">
+          <h2 class="sr-only">Filters – IK ZOEK</h2>
+          <div class="layer-hint">BASIS zichtbaar; geavanceerde filters zijn grijs (🔒) en niet aanklikbaar.</div>
+        </div>
+        <div id="filters-zoek-basic" class="filters-section"></div>
+        <div class="filters-more">
+          <button class="btn btn-tertiary" id="toggle-more-zoek" aria-expanded="false" aria-controls="filters-zoek-more">MEER FILTERS</button>
+          <div id="filters-zoek-more" class="more-panel" hidden></div>
+        </div>
+        <div class="nav-row">
+          <button id="btn-back-4-zoek" class="btn btn-secondary">TERUG</button>
+          <button id="btn-next-4-zoek" class="btn btn-primary">VERDER</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHERM 4B -->
+    <section id="screen-4-vergelijk" class="screen" aria-label="Filters – Ik vergelijk">
+      <div class="filters-wrapper">
+        <div class="filters-head">
+          <h2 class="sr-only">Filters – IK VERGELIJK</h2>
+          <div class="layer-hint">BASIS + UITGEBREID zichtbaar; EXPERT is grijs (🔒) en niet aanklikbaar.</div>
+        </div>
+        <div id="filters-vergelijk-basic" class="filters-section"></div>
+        <div class="filters-more">
+          <button class="btn btn-tertiary" id="toggle-more-vergelijk" aria-expanded="false" aria-controls="filters-vergelijk-more">MEER FILTERS</button>
+          <div id="filters-vergelijk-more" class="more-panel" hidden></div>
+        </div>
+        <div class="nav-row">
+          <button id="btn-back-4-vergelijk" class="btn btn-secondary">TERUG</button>
+          <button id="btn-next-4-vergelijk" class="btn btn-primary">VERDER</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHERM 5 -->
+    <section id="screen-5-results" class="screen" aria-label="Resultaten">
+      <div class="results-wrapper">
+        <h2>RESULTATEN</h2>
+        <p>Placeholder: samenvatting van je keuzes.</p>
+        <pre id="selected-filters" class="results-summary" aria-live="polite">Nog geen filters geselecteerd.</pre>
+        <div class="nav-row">
+          <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
+          <button id="btn-next-5" class="btn btn-primary" disabled aria-disabled="true">VERDER</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Ingebouwde JS -->
   <script>
-    // Mini script, ingebouwd
-    const s1 = document.getElementById('s1');
-    const s2 = document.getElementById('s2');
-    document.getElementById('go').addEventListener('click', () => {
-      s1.classList.remove('active'); s2.classList.add('active');
-    });
-    document.getElementById('back2').addEventListener('click', () => {
-      s2.classList.remove('active'); s1.classList.add('active');
-    });
-    document.getElementById('next2').addEventListener('click', () => {
-      alert('Test geslaagd: VERDER werkt. Daarna zetten we de rest terug.');
+    // 1) State & util
+    const SCREENS = ["screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
+    let currentScreen = "screen-1";
+    let lastChoice = null; // 'zoek' | 'vergelijk'
+
+    function goTo(id){
+      SCREENS.forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.toggle('active', s === id);
+      });
+      currentScreen = id;
+      updateHeaderVisibility();
+      updateNavStates();
+    }
+
+    function updateHeaderVisibility(){
+      const header = document.getElementById('app-header');
+      const index = SCREENS.indexOf(currentScreen);
+      // Header (icoon) pas vanaf scherm 3
+      if (index >= 2) header.classList.remove('hidden'); else header.classList.add('hidden');
+    }
+
+    function updateNavStates(){
+      // Scherm 1: TERUG blijft disabled/verborgen
+      const back1 = document.getElementById('btn-back-1');
+      if (back1) { back1.disabled = true; back1.setAttribute('aria-disabled','true'); }
+
+      // Scherm 3: VERDER pas actief na keuze
+      const next3 = document.getElementById('btn-next-3');
+      if (next3) {
+        const enabled = !!lastChoice;
+        next3.disabled = !enabled;
+        next3.setAttribute('aria-disabled', String(!enabled));
+      }
+
+      // Scherm 5: VERDER blijft disabled
+      const next5 = document.getElementById('btn-next-5');
+      if (next5) { next5.disabled = true; next5.setAttribute('aria-disabled','true'); }
+    }
+
+    // 2) Filtersconfig (kleine, demonstratieve set – genoeg om gedrag te tonen)
+    const FILTERS = {
+      groups: [
+        { id: "algemeen",       label: "ALGEMENE DRAGERINFORMATIE" },
+        { id: "schouderbanden", label: "SCHOUDERBANDEN" },
+        { id: "extras",         label: "EXTRA’S" }
+      ],
+      fields: [
+        // ALGEMEEN
+        { id:"maat_range", label:"DRAAGRANGE / MAAT", group:"algemeen", layer:"uitgebreid", type:"select", options:["50–56","56–62","62–68","68–74","74–80","80–86"] },
+        { id:"type_drager", label:"TYPE DRAGER", group:"algemeen", layer:"basis", type:"chips", options:["FULL BUCKLE","MEH DAI / MEI TAI","RINGSLING","REKBARE DOEK","GEWEVEN DOEK","HALF BUCKLE / HYBRID"] },
+        { id:"draagposities", label:"DRAAGPOSITIES", group:"algemeen", layer:"basis", type:"checkbox", options:["VOOR","RUG","HEUP"] },
+
+        // SCHOUDERBANDEN
+        { id:"schouder_kruisbaar", label:"SCHOUDERBAND KRUISBAAR", group:"schouderbanden", layer:"uitgebreid", type:"toggle" },
+        { id:"pfa_aanwezig", label:"PFA’S AANWEZIG", group:"schouderbanden", layer:"uitgebreid", type:"toggle" },
+
+        // EXTRA’S
+        { id:"materiaalsamenstelling", label:"MATERIAALSAMENSTELLING", group:"extras", layer:"expert", type:"text", tooltip:"Samenstelling. Soms verschilt binnen- en buitenzijde. Beschikbaar in EXPERT." }
+      ]
+    };
+
+    function layerActiveForPath(layer, path){
+      if (layer === 'basis') return true;
+      if (layer === 'uitgebreid') return path === 'vergelijk'; // alleen actief in IK VERGELIJK
+      if (layer === 'expert') return false;
+      return false;
+    }
+
+    function createFieldEl(field, path){
+      const active = layerActiveForPath(field.layer, path) && !(field.forceDisabled);
+      const group = document.createElement('div');
+      group.className = 'field' + (active ? '' : ' is-disabled');
+
+      // Label + badges/lock
+      const head = document.createElement('div');
+      head.style.display = 'flex'; head.style.alignItems = 'center'; head.style.justifyContent = 'space-between'; head.style.gap = '8px';
+
+      const label = document.createElement('div');
+      label.className = 'field-label';
+      label.textContent = field.label;
+
+      const badges = document.createElement('div');
+      badges.className = 'badges';
+      const layerBadge = document.createElement('span');
+      layerBadge.className = 'badge';
+      layerBadge.textContent = field.layer.toUpperCase();
+      badges.appendChild(layerBadge);
+
+      if (!active) {
+        const lock = document.createElement('span'); lock.className = 'lock';
+        const icon = document.createElement('span'); icon.className = 'icon'; icon.textContent = '🔒'; lock.appendChild(icon);
+        const txt = document.createElement('span'); txt.textContent = field.tooltip || `Beschikbaar in ${field.layer.toUpperCase()}`; lock.appendChild(txt);
+        badges.appendChild(lock);
+      }
+
+      head.appendChild(label); head.appendChild(badges);
+      group.appendChild(head);
+
+      // Controls
+      const controls = document.createElement('div');
+      controls.className = 'field-controls';
+
+      function disable(el){ if(!active){ el.setAttribute('disabled',''); el.setAttribute('aria-disabled','true'); } }
+
+      switch(field.type){
+        case 'chips': {
+          const wrap = document.createElement('div'); wrap.className = 'chips';
+          (field.options||[]).forEach(opt=>{
+            const chip = document.createElement('button');
+            chip.type = 'button'; chip.className = 'chip'; chip.setAttribute('aria-pressed','false'); chip.textContent = opt;
+            if (active) {
+              chip.addEventListener('click', ()=>{
+                const p = chip.getAttribute('aria-pressed') === 'true';
+                chip.setAttribute('aria-pressed', String(!p));
+              });
+            } else {
+              chip.style.pointerEvents = 'none'; chip.style.cursor = 'not-allowed';
+            }
+            wrap.appendChild(chip);
+          });
+          controls.appendChild(wrap);
+          break;
+        }
+        case 'checkbox': {
+          (field.options||[]).forEach(opt=>{
+            const lab = document.createElement('label'); lab.className = 'toggle';
+            const input = document.createElement('input'); input.type = 'checkbox'; disable(input);
+            const span = document.createElement('span'); span.textContent = opt;
+            lab.appendChild(input); lab.appendChild(span); controls.appendChild(lab);
+          });
+          break;
+        }
+        case 'toggle': {
+          const lab = document.createElement('label'); lab.className = 'toggle';
+          const input = document.createElement('input'); input.type = 'checkbox'; disable(input);
+          const span = document.createElement('span'); span.textContent = 'JA/NEE';
+          lab.appendChild(input); lab.appendChild(span); controls.appendChild(lab);
+          break;
+        }
+        case 'select': {
+          const sel = document.createElement('select');
+          (field.options||[]).forEach(opt=>{
+            const o = document.createElement('option'); o.value = String(opt); o.textContent = String(opt); sel.appendChild(o);
+          });
+          disable(sel); controls.appendChild(sel);
+          break;
+        }
+        case 'text': {
+          const input = document.createElement('input'); input.type = 'text'; input.placeholder = '—'; disable(input); controls.appendChild(input);
+          break;
+        }
+        default: {
+          const input = document.createElement('input'); input.type = 'text'; disable(input); controls.appendChild(input);
+          break;
+        }
+      }
+
+      group.appendChild(controls);
+      return group;
+    }
+
+    function renderFiltersForPath(path){
+      const rootBasic = document.getElementById(`filters-${path}-basic`);
+      const rootMore  = document.getElementById(`filters-${path}-more`);
+      if(!rootBasic || !rootMore) return;
+      rootBasic.innerHTML = '';
+      rootMore.innerHTML  = '';
+
+      // Bouw per groep: BASIS velden naar boven, de rest in "Meer filters"
+      FILTERS.groups.forEach(g=>{
+        const basicFields = FILTERS.fields.filter(f => f.group===g.id && f.layer==='basis');
+        const moreFields  = FILTERS.fields.filter(f => f.group===g.id && f.layer!=='basis');
+
+        if (basicFields.length){
+          const sec = document.createElement('section'); sec.className = 'group';
+          const head = document.createElement('div'); head.className='group-header';
+          const title= document.createElement('div'); title.className='group-title'; title.textContent = g.label;
+          const badges=document.createElement('div'); badges.className='badges';
+          const b=document.createElement('span'); b.className='badge'; b.textContent='BASIS'; badges.appendChild(b);
+          head.appendChild(title); head.appendChild(badges); sec.appendChild(head);
+          basicFields.forEach(f => sec.appendChild(createFieldEl(f, path)));
+          rootBasic.appendChild(sec);
+        }
+
+        if (moreFields.length){
+          const sec = document.createElement('section'); sec.className = 'group';
+          const head = document.createElement('div'); head.className='group-header';
+          const title= document.createElement('div'); title.className='group-title'; title.textContent = g.label;
+          const badges=document.createElement('div'); badges.className='badges';
+          const hasU = moreFields.some(f=>f.layer==='uitgebreid');
+          const hasE = moreFields.some(f=>f.layer==='expert');
+          if (hasU){ const b=document.createElement('span'); b.className='badge'; b.textContent='UITGEBREID'; badges.appendChild(b); }
+          if (hasE){ const b=document.createElement('span'); b.className='badge'; b.textContent='EXPERT'; badges.appendChild(b); }
+          head.appendChild(title); head.appendChild(badges); sec.appendChild(head);
+          moreFields.forEach(f => sec.appendChild(createFieldEl(f, path)));
+          rootMore.appendChild(sec);
+        }
+      });
+    }
+
+    function summarizeSelections(){
+      const out = document.getElementById('selected-filters');
+      if (!out) return;
+      out.textContent = lastChoice
+        ? `• Pad: ${lastChoice === 'zoek' ? 'IK ZOEK' : 'IK VERGELIJK'}`
+        : 'Nog geen filters geselecteerd.';
+    }
+
+    // 3) Events & bootstrap
+    function setupEvents(){
+      // Scherm 1
+      document.getElementById('btn-next-1')?.addEventListener('click', () => goTo('screen-2'));
+
+      // Scherm 2
+      document.getElementById('btn-back-2')?.addEventListener('click', () => goTo('screen-1'));
+      document.getElementById('btn-next-2')?.addEventListener('click', () => goTo('screen-3'));
+
+      // Scherm 3
+      document.getElementById('btn-back-3')?.addEventListener('click', () => goTo('screen-2'));
+      document.getElementById('btn-next-3')?.addEventListener('click', () => {
+        if (lastChoice === 'zoek') goTo('screen-4-zoek');
+        else if (lastChoice === 'vergelijk') goTo('screen-4-vergelijk');
+      });
+      document.getElementById('card-zoek')?.addEventListener('click', () => {
+        lastChoice = 'zoek'; updateNavStates(); renderFiltersForPath('zoek'); goTo('screen-4-zoek');
+      });
+      document.getElementById('card-vergelijk')?.addEventListener('click', () => {
+        lastChoice = 'vergelijk'; updateNavStates(); renderFiltersForPath('vergelijk'); goTo('screen-4-vergelijk');
+      });
+
+      // Meer filters toggles
+      document.getElementById('toggle-more-zoek')?.addEventListener('click', (e)=>{
+        const panel = document.getElementById('filters-zoek-more');
+        const expanded = e.currentTarget.getAttribute('aria-expanded') === 'true';
+        e.currentTarget.setAttribute('aria-expanded', String(!expanded));
+        panel.hidden = expanded;
+      });
+      document.getElementById('toggle-more-vergelijk')?.addEventListener('click', (e)=>{
+        const panel = document.getElementById('filters-vergelijk-more');
+        const expanded = e.currentTarget.getAttribute('aria-expanded') === 'true';
+        e.currentTarget.setAttribute('aria-expanded', String(!expanded));
+        panel.hidden = expanded;
+      });
+
+      // Scherm 4 → 5
+      document.getElementById('btn-back-4-zoek')?.addEventListener('click', () => goTo('screen-3'));
+      document.getElementById('btn-next-4-zoek')?.addEventListener('click', () => { summarizeSelections(); goTo('screen-5-results'); });
+      document.getElementById('btn-back-4-vergelijk')?.addEventListener('click', () => goTo('screen-3'));
+      document.getElementById('btn-next-4-vergelijk')?.addEventListener('click', () => { summarizeSelections(); goTo('screen-5-results'); });
+
+      // Scherm 5 terug
+      document.getElementById('btn-back-5')?.addEventListener('click', () => {
+        if (lastChoice === 'zoek') goTo('screen-4-zoek');
+        else if (lastChoice === 'vergelijk') goTo('screen-4-vergelijk');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupEvents();
+      updateHeaderVisibility();
+      updateNavStates();
     });
   </script>
 </body>
