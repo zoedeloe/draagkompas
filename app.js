@@ -1,4 +1,3 @@
-
 // -------- Draagkompas App --------
 // NL: Navigatie, schermen, en dynamische filteropbouw volgens lagen (BASIS/UITGEBREID/EXPERT)
 
