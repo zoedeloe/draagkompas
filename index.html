@@ -1,14 +1,7 @@
 
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Draagkompas</title>
-
-  <!-- Google Fonts: alleen Montserrat voor alles -->
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- Alleen Montserrat (zelfde stijl overal als filters) -->
+  https://fonts.gstatic.com
+  https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap
 
   <style>
     /* ======================== BASIS ============================ */
@@ -26,22 +19,21 @@
       --line:rgba(255,255,255,0.15); --panel:#1b165c;
     }
 
-    /* ==================== ZWEVEND ICOON & HEADER-TEXT ===================== */
+    /* ==================== ZWEVENDE ICONEN (vanaf scherm 3) ===================== */
     .floating-icon{
       position:fixed; top:14px; left:14px; z-index:100;
       display:none; /* tonen vanaf scherm 3 via .show-icon op body */
     }
-    body.show-icon .floating-icon{ display:block; }
-    .floating-icon img{ height:140px; width:auto; display:block; }
-
     .floating-text{
       position:fixed; top:20px; right:20px; z-index:101;
-      display:none; /* tonen vanaf scherm 3 net zoals icon */
+      display:none; /* tonen vanaf scherm 3 via .show-icon op body */
     }
-    body.show-icon .floating-text{ display:block; }
-    .floating-text img{
-      height:120px; width:auto; display:block;
-    }
+    /* Pas vanaf scherm 3 tonen */
+    body.show-icon .floating-icon,
+    body.show-icon .floating-text { display:block; }
+
+    .floating-icon img{ height:140px; width:auto; display:block; }
+    .floating-text img{ height:120px; width:auto; display:block; }
 
     /* ==================== SCHERMEN ====================== */
     .screen{ display:none; min-height:100svh; padding:16px; }
@@ -67,7 +59,7 @@
     .intro-inner{ display:grid; gap:24px; justify-items:center; max-width:1100px; }
     .intro-logo{ width:min(95%,1100px); height:auto; display:block; }
 
-    /* VERBERG TERUG op scherm 1 helemaal */
+    /* VERBERG TERUG op scherm 1 volledig (ook niet focusbaar) */
     #btn-back-1{ display:none !important; }
 
     /* ==================== SCHERM 2 ====================== */
@@ -92,17 +84,17 @@
     }
     .choice-icon{ font-size:40px; }
 
-    /* TITEL & SUBTEXT op scherm 3 => Montserrat (zelfde als filterscherm) */
+    /* TITELS in wit + CAPS + Montserrat */
     .choice-title{
       font-size:28px;
       font-weight:800;
       letter-spacing:0.06em;
-      font-family: inherit; /* Montserrat */
-      color: var(--ink);
+      text-transform: uppercase;
+      color: #ffffff;           /* WIT */
     }
+    /* SUB in Montserrat (muted kleur) */
     .choice-sub{
       font-size:16px;
-      font-family: inherit; /* Montserrat */
       color: var(--muted);
     }
 
@@ -169,23 +161,21 @@
 </head>
 <body>
 
-<!-- Zwevend icoon (vanaf scherm 3 zichtbaar) -->
+<!-- Zwevend icoon & header-text: pas zichtbaar vanaf scherm 3 -->
 <div class="floating-icon">
-  <img src="assets/img/header-icon.png" alt="Draagkompas icoon">
+  assets/img/header-icon.png
 </div>
-
-<!-- Zwevende header-tekst (rechtsboven; vanaf scherm 3 zichtbaar) -->
 <div class="floating-text">
-  <img src="assets/img/header-text.png" alt="Draagkompas header tekst">
+  assets/img/header-text.png
 </div>
 
 <main id="app">
 
   <!-- =================== SCHERM 1 =================== -->
-  <section id="screen-1" class="screen active">
+  <section id="screen-1" class="screen active" aria-label="Intro">
     <div class="screen1-wrapper">
       <div class="intro-inner">
-        <img src="assets/img/logo.png" class="intro-logo" alt="Draagkompas logo">
+        assets/img/logo.png
         <div class="nav-row intro-nav">
           <button id="btn-back-1" class="btn btn-secondary" disabled aria-disabled="true">TERUG</button>
           <button id="btn-next-1" class="btn btn-primary">VERDER</button>
@@ -195,10 +185,10 @@
   </section>
 
   <!-- =================== SCHERM 2 =================== -->
-  <section id="screen-2" class="screen">
+  <section id="screen-2" class="screen" aria-label="Disclaimer">
     <div class="screen2-wrapper">
       <figure>
-        <img src="assets/img/draagkompas-disclaimer.png" alt="Belangrijke informatie en disclaimer" class="screen2-image">
+        assets/img/draagkompas-disclaimer.png
       </figure>
       <div class="nav-row">
         <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
@@ -300,6 +290,7 @@ function goTo(id){
 
 function updateIcon(){
   const visibleIndex=SCREENS.findIndex(id=>document.getElementById(id).classList.contains("active"));
+  // Icoon + header-text pas tonen vanaf scherm 3
   if(visibleIndex>=2){
     document.body.classList.add("show-icon");
   }else{
@@ -312,8 +303,7 @@ function updateNav(){
   if(next3){ next3.disabled=!lastChoice; next3.setAttribute("aria-disabled", String(!lastChoice)); }
 }
 
-/* ============ FILTERDATA (beknopt voorbeeld + structuur) ============ */
-/* (Laat de set hier zoals je vorige werkende versie; je had die al.)   */
+/* ============ FILTERDATA (voorbeeld / structuur) ============ */
 const FILTERS={
   groups:[
     {id:"algemeen",label:"ALGEMENE DRAGERINFORMATIE"},
@@ -331,8 +321,7 @@ const FILTERS={
     {id:"type_drager",label:"TYPE DRAGER",group:"algemeen",layer:"basis",type:"chips",
      options:["FULL BUCKLE","MEH DAI / MEI TAI","RINGSLING","REKBARE DOEK","GEWEVEN DOEK","HALF BUCKLE"]},
     {id:"versie_variant",label:"VERSIE / VARIANT",group:"algemeen",layer:"basis",type:"text"}
-    /* … voeg hier desgewenst je volledige lijst terug in (je vorige file werkte al).
-       De render-functies hieronder tonen BASIS bovenaan en UITGEBREID/EXPERT onder “MEER FILTERS”. */
+    /* … voeg hier desgewenst je volledige lijst in; structuur en rendering staan klaar. */
   ]
 };
 
