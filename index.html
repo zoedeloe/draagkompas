@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -317,7 +318,7 @@
         : 'Nog geen filters geselecteerd.';
     }
 
-    /* =================== FILTERS – VOLLEDIGE SET VOLGENS JOUW LAGEN =================== */
+    /* =================== FILTERS – VOLLEDIGE SET =================== */
     const FILTERS = {
       groups: [
         { id:"algemeen",       label:"ALGEMENE DRAGERINFORMATIE" },
@@ -439,7 +440,7 @@
 
     function createFieldEl(field, path){
       const isActive = layerActiveForPath(field.layer, path);
-      const active = isActive; // per veld overrides kun je hier later nog forceren
+      const active = isActive;
       const group = document.createElement('div');
       group.className = 'field' + (active ? '' : ' is-disabled');
 
@@ -511,16 +512,37 @@
         }
         case 'select': {
           const sel = document.createElement('select');
-          (field.options||[]).forEach(opt=>{
-            const o = document.createElement('option'); o.value = String(opt); o.textnput.placeholder = '0'; disable(input); controls.appendChild(input);
+          (field.options || []).forEach(opt=>{
+            const o = document.createElement('option');
+            o.value = String(opt);
+            o.textContent = String(opt);
+            sel.appendChild(o);
+          });
+          disable(sel);
+          controls.appendChild(sel);
+          break;
+        }
+        case 'number': {
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.placeholder = '0';
+          disable(input);
+          controls.appendChild(input);
           break;
         }
         case 'text': {
-          const input = document.createElement('input'); input.type = 'text'; input.placeholder = '—'; disable(input); controls.appendChild(input);
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.placeholder = '—';
+          disable(input);
+          controls.appendChild(input);
           break;
         }
         default: {
-          const input = document.createElement('input'); input.type = 'text'; disable(input); controls.appendChild(input);
+          const input = document.createElement('input');
+          input.type = 'text';
+          disable(input);
+          controls.appendChild(input);
           break;
         }
       }
