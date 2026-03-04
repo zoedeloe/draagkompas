@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
 
-  <!-- Alleen Montserrat (zelfde stijl overal als filters) -->
-  https://fonts.gstatic.com
-  https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap
+  <!-- Alleen Montserrat voor consistente look (zoals filterscherm) -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
 
   <style>
     /* ======================== BASIS ============================ */
@@ -169,10 +169,10 @@
 
 <!-- Zwevend icoon & header-text: pas zichtbaar vanaf scherm 3 -->
 <div class="floating-icon">
-  assets/img/header-icon.png
+  <img src="assets/img/header-icon.png" alt="Draagkompas icoon" />
 </div>
 <div class="floating-text">
-  assets/img/header-text.png
+  <img src="assets/img/header-text.png" alt="Draagkompas header tekst" />
 </div>
 
 <main id="app">
@@ -181,9 +181,9 @@
   <section id="screen-1" class="screen active" aria-label="Intro">
     <div class="screen1-wrapper">
       <div class="intro-inner">
-        assets/img/logo.png
+        <img src="assets/img/logo.png" class="intro-logo" alt="Draagkompas logo" />
         <div class="nav-row intro-nav">
-          <button id="btn-back-1" class="btn btn-secondary" disabled aria-disabled="true">TERUG</button>
+          <button id="btn-back-1" class="btn btn-secondary" aria-hidden="true" tabindex="-1">TERUG</button>
           <button id="btn-next-1" class="btn btn-primary">VERDER</button>
         </div>
       </div>
@@ -194,7 +194,7 @@
   <section id="screen-2" class="screen" aria-label="Disclaimer">
     <div class="screen2-wrapper">
       <figure>
-        assets/img/draagkompas-disclaimer.png
+        <img src="assets/img/draagkompas-disclaimer.png" class="screen2-image" alt="Belangrijke informatie en disclaimer" />
       </figure>
       <div class="nav-row">
         <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
