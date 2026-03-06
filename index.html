@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -5,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
 
-  <!-- Alleen Montserrat voor consistente look (zoals filterscherm) -->
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
+  <!-- Alleen Montserrat voor consistente look -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
     /* ======================== BASIS ============================ */
@@ -76,11 +77,19 @@
     }
 
     /* ==================== SCHERM 3 ====================== */
-    .screen3-wrapper{ max-width:1100px; margin:0 auto; display:grid; gap:28px; }
+    .screen3-wrapper{
+      max-width:1100px; margin:0 auto;
+      display:grid; gap:28px;
+      /* Extra top-ruimte zodat de keuzevakken onder de zwevende iconen vallen */
+      padding-top: 160px;   /* icon ~140px + buffer */
+      padding-bottom: 40px;
+    }
     .choice-grid{
       display:grid;
       grid-template-columns:repeat(2,1fr);
       gap:20px;
+      /* centreren */
+      align-items:center;
     }
     .choice-card{
       background:var(--card); border:1px solid var(--line);
@@ -167,12 +176,12 @@
 </head>
 <body>
 
-<!-- Zwevend icoon & header-text: pas zichtbaar vanaf scherm 3 -->
+<!-- Zwevende iconen (pas zichtbaar vanaf scherm 3 via .show-icon) -->
 <div class="floating-icon">
-  <img src="assets/img/header-icon.png" alt="Draagkompas icoon" />
+  <img src="assets/img/header-icon.png" alt="Draagkompas icoon">
 </div>
 <div class="floating-text">
-  <img src="assets/img/header-text.png" alt="Draagkompas header tekst" />
+  <img src="assets/img/header-text.png" alt="Draagkompas header tekst">
 </div>
 
 <main id="app">
@@ -181,7 +190,7 @@
   <section id="screen-1" class="screen active" aria-label="Intro">
     <div class="screen1-wrapper">
       <div class="intro-inner">
-        <img src="assets/img/logo.png" class="intro-logo" alt="Draagkompas logo" />
+        <img src="assets/img/logo.png" class="intro-logo" alt="Draagkompas logo">
         <div class="nav-row intro-nav">
           <button id="btn-back-1" class="btn btn-secondary" aria-hidden="true" tabindex="-1">TERUG</button>
           <button id="btn-next-1" class="btn btn-primary">VERDER</button>
@@ -194,7 +203,7 @@
   <section id="screen-2" class="screen" aria-label="Disclaimer">
     <div class="screen2-wrapper">
       <figure>
-        <img src="assets/img/draagkompas-disclaimer.png" class="screen2-image" alt="Belangrijke informatie en disclaimer" />
+        <img src="assets/img/draagkompas-disclaimer.png" alt="Disclaimer Draagkompas" class="screen2-image">
       </figure>
       <div class="nav-row">
         <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
@@ -309,7 +318,7 @@ function updateNav(){
   if(next3){ next3.disabled=!lastChoice; next3.setAttribute("aria-disabled", String(!lastChoice)); }
 }
 
-/* ============ FILTERDATA (voorbeeld / structuur) ============ */
+/* ============ FILTERDATA (voorbeeld / structuur – uitbreidbaar) ============ */
 const FILTERS={
   groups:[
     {id:"algemeen",label:"ALGEMENE DRAGERINFORMATIE"},
@@ -499,13 +508,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("toggle-more-vergelijk").onclick=e=>{
     const p=document.getElementById("filters-vergelijk-more");
     const exp=e.target.getAttribute("aria-expanded")==="true";
-    p.hidden=exp; e.target.setAttribute("aria-expanded", String(!exp));
-  };
-
-  /* Scherm 4A → 5 */
-  document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
-  document.getElementById("btn-next-4-zoek").onclick=()=>{
-    document.getElementById("selected-filters").textContent="Gekozen pad: IK ZOEK";
+    p.hidden=exp; etent="Gekozen pad: IK ZOEK";
     goTo("screen-5-results");
   };
 
