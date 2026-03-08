@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
 
-  <!-- Alleen Montserrat voor consistente look -->
+  <!-- Montserrat (consistente look) -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 
@@ -23,6 +23,9 @@
       --bg:#0f0b3a; --card:#15104a; --ink:#fff; --muted:#cfd3ff;
       --accent:#ff7a59; --accent-ink:#1a1446;
       --line:rgba(255,255,255,0.15); --panel:#1b165c;
+
+      /* NIEUW: één bronwaarde voor de icon-hoogte (matcht CSS hieronder) */
+      --floating-h: 110px;
     }
 
     /* ==================== ZWEVENDE ICONEN (vanaf scherm 3) ===================== */
@@ -36,10 +39,15 @@
     }
     /* Pas vanaf scherm 3 tonen */
     body.show-icon .floating-icon,
-    body.show-icon .floating-text { display:block; }
+    body.show-icon .floating-text{ display:block; }
 
-    .floating-icon img{ height:140px; width:auto; display:block; }
-    .floating-text img{ height:120px; width:auto; display:block; }
+    /* Even groot, iets kleiner (110px) */
+    .floating-icon img,
+    .floating-text img{
+      height: var(--floating-h);
+      width: auto;
+      display: block;
+    }
 
     /* ==================== SCHERMEN ====================== */
     .screen{ display:none; min-height:100svh; padding:16px; }
@@ -80,14 +88,13 @@
       max-width:1100px; margin:0 auto;
       display:grid; gap:28px;
       /* Extra top-ruimte zodat de keuzevakken onder de zwevende iconen vallen */
-      padding-top: 160px;   /* icon ~140px + buffer */
+      padding-top: calc(var(--floating-h) + 60px);   /* 110 + 60 = 170px */
       padding-bottom: 40px;
     }
     .choice-grid{
       display:grid;
       grid-template-columns:repeat(2,1fr);
       gap:20px;
-      /* centreren */
       align-items:center;
     }
     .choice-card{
@@ -114,10 +121,16 @@
 
     @media(max-width:720px){
       .choice-grid{ grid-template-columns:1fr; }
+      /* Op mobiel: nog wat extra top-ruimte (zeker geen overlap) */
+      .screen3-wrapper{
+        padding-top: calc(var(--floating-h) + 80px); /* 110 + 80 = 190px */
+      }
     }
 
     /* ==================== SCHERM 4 (filters) ====================== */
     .filters-wrapper{ max-width:1100px; margin:0 auto; display:grid; gap:20px; }
+    .filters-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .layer-hint{ color:var(--muted); font-size:14px; }
     .filters-section{ display:grid; gap:16px; }
 
     .group{
@@ -131,6 +144,7 @@
       margin-bottom:10px;
     }
     .group-title{ font-weight:800; }
+    .badges{ display:inline-flex; gap:6px; align-items:center; }
     .badge{
       border:1px solid var(--line);
       padding:2px 6px; border-radius:999px;
@@ -138,6 +152,9 @@
     }
 
     .field{ display:grid; gap:6px; margin:10px 0; }
+    .field-label{ font-weight:600; }
+    .field-controls{ display:flex; flex-wrap:wrap; gap:8px; }
+
     .chips{ display:flex; flex-wrap:wrap; gap:8px; }
     .chip{
       padding:8px 12px; border-radius:999px;
@@ -153,6 +170,7 @@
       border:1px solid var(--line);
       color:#fff;
       padding:8px 10px; border-radius:8px;
+      min-width: 180px;
     }
 
     .is-disabled{ opacity:.55; }
@@ -171,6 +189,8 @@
       border-radius:10px; padding:12px;
       white-space:pre-wrap;
     }
+    /* A11y (screen reader only) */
+    .sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
   </style>
 </head>
 <body>
@@ -180,7 +200,7 @@
   <img src="assets/img/header-icon.png" alt="Draagkompas icoon">
 </div>
 <div class="floating-text">
-  <img src="assets/img/header-text.png" alt="Draagkompas header tekst">
+  <img src="assets/img/header-text.png" alt="Draagkompas header-tekst">
 </div>
 
 <main id="app">
@@ -202,7 +222,7 @@
   <section id="screen-2" class="screen" aria-label="Disclaimer">
     <div class="screen2-wrapper">
       <figure>
-        <img src="assets/img/draagkompas-disclaimer.png" alt="Disclaimer Draagkompas" class="screen2-image">
+        <img src="assets/img/draagkompas-disclaimer.png" class="screen2-image" alt="Belangrijke informatie en disclaimer">
       </figure>
       <div class="nav-row">
         <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
@@ -238,12 +258,15 @@
   <!-- =================== SCHERM 4A =================== -->
   <section id="screen-4-zoek" class="screen" aria-label="Filters – Ik zoek">
     <div class="filters-wrapper">
-      <p class="layer-hint">BASIS zichtbaar; Uitgebreid/Expert = 🔒 niet aanklikbaar.</p>
+      <div class="filters-head">
+        <h2 class="sr-only">Filters – IK ZOEK</h2>
+        <div class="layer-hint">BASIS zichtbaar; UITGEBREID/EXPERT zijn grijs (🔒) en niet aanklikbaar.</div>
+      </div>
 
       <div id="filters-zoek-basic" class="filters-section"></div>
 
       <div class="filters-more">
-        <button id="toggle-more-zoek" class="btn btn-tertiary" aria-expanded="false">MEER FILTERS</button>
+        <button id="toggle-more-zoek" class="btn btn-tertiary" aria-expanded="false" aria-controls="filters-zoek-more">MEER FILTERS</button>
         <div id="filters-zoek-more" class="more-panel" hidden></div>
       </div>
 
@@ -257,12 +280,15 @@
   <!-- =================== SCHERM 4B =================== -->
   <section id="screen-4-vergelijk" class="screen" aria-label="Filters – Ik vergelijk">
     <div class="filters-wrapper">
-      <p class="layer-hint">BASIS + UITGEBREID actief; EXPERT = 🔒 niet aanklikbaar.</p>
+      <div class="filters-head">
+        <h2 class="sr-only">Filters – IK VERGELIJK</h2>
+        <div class="layer-hint">BASIS + UITGEBREID actief; EXPERT is grijs (🔒) en niet aanklikbaar.</div>
+      </div>
 
       <div id="filters-vergelijk-basic" class="filters-section"></div>
 
       <div class="filters-more">
-        <button id="toggle-more-vergelijk" class="btn btn-tertiary" aria-expanded="false">MEER FILTERS</button>
+        <button id="toggle-more-vergelijk" class="btn btn-tertiary" aria-expanded="false" aria-controls="filters-vergelijk-more">MEER FILTERS</button>
         <div id="filters-vergelijk-more" class="more-panel" hidden></div>
       </div>
 
@@ -317,16 +343,16 @@ function updateNav(){
   if(next3){ next3.disabled=!lastChoice; next3.setAttribute("aria-disabled", String(!lastChoice)); }
 }
 
-/* ============ FILTERDATA (voorbeeld / structuur – uitbreidbaar) ============ */
+/* ============ FILTERDATA – (voorbeeld structuur, of Sheet/JSON kun je later koppelen) ============ */
 const FILTERS={
   groups:[
     {id:"algemeen",label:"ALGEMENE DRAGERINFORMATIE"},
     {id:"tailleband",label:"TAILLEBAND"},
     {id:"schouderbanden",label:"SCHOUDERBANDEN"},
-    {id:"verstel",label:"VERSTEL"},
+    {id:"verstel",label:"VERSTELBAARHEID & SYSTEEM"},
     {id:"rugpand",label:"RUGPAND"},
     {id:"slaapkapje",label:"SLAAPKAPJE / FLAP"},
-    {id:"veiligheid",label:"VEILIGHEID"},
+    {id:"veiligheid",label:"VEILIGHEID & EXPERTINFO"},
     {id:"extras",label:"EXTRA’S"}
   ],
   fields:[
@@ -335,7 +361,6 @@ const FILTERS={
     {id:"type_drager",label:"TYPE DRAGER",group:"algemeen",layer:"basis",type:"chips",
      options:["FULL BUCKLE","MEH DAI / MEI TAI","RINGSLING","REKBARE DOEK","GEWEVEN DOEK","HALF BUCKLE"]},
     {id:"versie_variant",label:"VERSIE / VARIANT",group:"algemeen",layer:"basis",type:"text"}
-    /* … voeg hier desgewenst je volledige lijst in; structuur en rendering staan klaar. */
   ]
 };
 
@@ -361,7 +386,7 @@ function createField(f,path){
     <div class="field-label">${f.label}</div>
     <div class="badges">
       <span class="badge">${f.layer.toUpperCase()}</span>
-      ${active?"":"<span>🔒</span>"}
+      ${active?"":"<span style='display:inline-flex;gap:4px;'>🔒 <span>"+(f.tooltip||("Beschikbaar in "+f.layer.toUpperCase()))+"</span></span>"}
     </div>`;
   wrapper.appendChild(head);
 
@@ -379,10 +404,7 @@ function createField(f,path){
       chip.textContent=opt;
       chip.setAttribute("aria-pressed","false");
       if(active){
-        chip.onclick=()=>chip.setAttribute(
-          "aria-pressed",
-          chip.getAttribute("aria-pressed")==="true" ? "false" : "true"
-        );
+        chip.onclick=()=>chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed")==="true"?"false":"true");
       } else { disable(chip); }
       box.appendChild(chip);
     });
@@ -400,10 +422,8 @@ function createField(f,path){
     });
   }
   else if(f.type==="toggle"){
-    const lab=document.createElement("label");
-    lab.className="toggle";
-    const inp=document.createElement("input");
-    inp.type="checkbox"; disable(inp);
+    const lab=document.createElement("label"); lab.className="toggle";
+    const inp=document.createElement("input"); inp.type="checkbox"; disable(inp);
     const sp=document.createElement("span"); sp.textContent="JA/NEE";
     lab.append(inp,sp);
     controls.appendChild(lab);
@@ -423,7 +443,7 @@ function createField(f,path){
     inp.type="number"; inp.placeholder="0"; disable(inp);
     controls.appendChild(inp);
   }
-  else{
+  else{ // text/default
     const inp=document.createElement("input");
     inp.type="text"; inp.placeholder="—"; disable(inp);
     controls.appendChild(inp);
@@ -497,17 +517,22 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
   };
 
-  /* MEER FILTERS */
+  /* MEER FILTERS toggles */
   document.getElementById("toggle-more-zoek").onclick=e=>{
     const p=document.getElementById("filters-zoek-more");
-    const exp=e.target.getAttribute("aria-expanded")==="true";
-    p.hidden=exp; e.target.setAttribute("aria-expanded", String(!exp));
+    const exp=e.currentTarget.getAttribute("aria-expanded")==="true";
+    p.hidden=exp; e.currentTarget.setAttribute("aria-expanded", String(!exp));
   };
-
   document.getElementById("toggle-more-vergelijk").onclick=e=>{
     const p=document.getElementById("filters-vergelijk-more");
-    const exp=e.target.getAttribute("aria-expanded")==="true";
-    p.hidden=exp; etent="Gekozen pad: IK ZOEK";
+    const exp=e.currentTarget.getAttribute("aria-expanded")==="true";
+    p.hidden=exp; e.currentTarget.setAttribute("aria-expanded", String(!exp));
+  };
+
+  /* Scherm 4A → 5 */
+  document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
+  document.getElementById("btn-next-4-zoek").onclick=()=>{
+    document.getElementById("selected-filters").textContent="Gekozen pad: IK ZOEK";
     goTo("screen-5-results");
   };
 
@@ -524,6 +549,9 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
   };
 
+  /* Init UI state */
+  updateIcon();
+  updateNav();
 });
 </script>
 
