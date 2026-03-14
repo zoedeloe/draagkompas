@@ -24,24 +24,20 @@
       --accent:#ff7a59; --accent-ink:#1a1446;
       --line:rgba(255,255,255,0.15); --panel:#1b165c;
 
-      /* NIEUW: één bronwaarde voor de icon-hoogte (matcht CSS hieronder) */
+      /* hoogte van beide zwevende iconen */
       --floating-h: 110px;
     }
 
     /* ==================== ZWEVENDE ICONEN (vanaf scherm 3) ===================== */
     .floating-icon{
-      position:fixed; top:14px; left:14px; z-index:100;
-      display:none; /* tonen vanaf scherm 3 via .show-icon op body */
+      position:fixed; top:14px; left:14px; z-index:100; display:none;
     }
     .floating-text{
-      position:fixed; top:20px; right:20px; z-index:101;
-      display:none; /* tonen vanaf scherm 3 via .show-icon op body */
+      position:fixed; top:20px; right:20px; z-index:101; display:none;
     }
-    /* Pas vanaf scherm 3 tonen */
     body.show-icon .floating-icon,
     body.show-icon .floating-text{ display:block; }
 
-    /* Even groot, iets kleiner (110px) */
     .floating-icon img,
     .floating-text img{
       height: var(--floating-h);
@@ -189,6 +185,7 @@
       border-radius:10px; padding:12px;
       white-space:pre-wrap;
     }
+
     /* A11y (screen reader only) */
     .sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
   </style>
@@ -200,7 +197,7 @@
   <img src="assets/img/header-icon.png" alt="Draagkompas icoon">
 </div>
 <div class="floating-text">
-  <img src="assets/img/header-text.png" alt="Draagkompas header-tekst">
+  <img src="assets/img/header-text.png" alt="Draagkompas header tekst">
 </div>
 
 <main id="app">
@@ -314,11 +311,67 @@
 </main>
 
 <script>
-/* ============ STATE ============ */
+/* ========= 0) Jouw Google Sheet ID ========= */
+const GOOGLE_SHEET_ID = '16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto';
+/* Tabbladen moeten heten: 'groups' en 'fields' */
+
+/* ========= 1) Helpers om Google gviz JSON te laden ========= */
+async function fetchGVizJSON(sheetName){
+  const base = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq`;
+  const url  = `${base}?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=&_=${Date.now()}`; // cache-buster
+  const resp = await fetch(url);
+  if(!resp.ok) throw new Error(`Laden mislukt voor sheet '${sheetName}' (${resp.status})`);
+  const text = await resp.text();
+  const match = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+  if(!match) throw new Error('Onverwacht gviz-formaat');
+  const data = JSON.parse(match[1]);
+  const rows = (data.table.rows || []).map(r => (r.c||[]).map(c => (c? c.v : '')));
+  const headers = (data.table.cols || []).map(c => c.label || c.id || '');
+  return { headers, rows };
+}
+
+/* ========= 2) Mapping: rows → FILTERS.groups / FILTERS.fields ========= */
+function makeGroups(g){
+  // headers: id,label,order
+  const idx = Object.fromEntries(g.headers.map((h,i)=>[String(h).toLowerCase(), i]));
+  const rows = g.rows
+    .map(r => ({
+      id: String(r[idx.id] ?? '').trim(),
+      label: String(r[idx.label] ?? '').trim(),
+      order: Number(r[idx.order] ?? 0) || 0
+    }))
+    .filter(x => x.id && x.label)
+    .sort((a,b)=> a.order - b.order);
+  return rows;
+}
+
+function makeFields(f){
+  // headers: id,label,group,layer,type,options,tooltip,order
+  const idx = Object.fromEntries(f.headers.map((h,i)=>[String(h).toLowerCase(), i]));
+  const rows = f.rows
+    .map(r => {
+      const rawOptions = String(r[idx.options] ?? '').trim();
+      return {
+        id:        String(r[idx.id] ?? '').trim(),
+        label:     String(r[idx.label] ?? '').trim(),
+        group:     String(r[idx.group] ?? '').trim(),
+        layer:     String(r[idx.layer] ?? '').trim().toLowerCase(),
+        type:      String(r[idx.type] ?? '').trim().toLowerCase(),
+        options:   rawOptions ? rawOptions.split('|').map(s=>s.trim()).filter(Boolean) : [],
+        tooltip:   String(r[idx.tooltip] ?? '').trim(),
+        order:     Number(r[idx.order] ?? 0) || 0
+      };
+    })
+    .filter(x => x.id && x.label && x.group && x.layer && x.type)
+    .sort((a,b)=> a.order - b.order);
+  return rows;
+}
+
+/* ========= 3) UI helpers ========= */
 const SCREENS=["screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
 let lastChoice=null;
+let FILTERS={ groups:[], fields:[] };
 
-/* ============ NAVIGATIE ============ */
 function goTo(id){
   SCREENS.forEach(s=>{
     const el=document.getElementById(s);
@@ -330,12 +383,8 @@ function goTo(id){
 
 function updateIcon(){
   const visibleIndex=SCREENS.findIndex(id=>document.getElementById(id).classList.contains("active"));
-  // Icoon + header-text pas tonen vanaf scherm 3
-  if(visibleIndex>=2){
-    document.body.classList.add("show-icon");
-  }else{
-    document.body.classList.remove("show-icon");
-  }
+  if(visibleIndex>=2) document.body.classList.add("show-icon");
+  else document.body.classList.remove("show-icon");
 }
 
 function updateNav(){
@@ -343,181 +392,143 @@ function updateNav(){
   if(next3){ next3.disabled=!lastChoice; next3.setAttribute("aria-disabled", String(!lastChoice)); }
 }
 
-/* ============ FILTERDATA – (voorbeeld structuur, of Sheet/JSON kun je later koppelen) ============ */
-const FILTERS={
-  groups:[
-    {id:"algemeen",label:"ALGEMENE DRAGERINFORMATIE"},
-    {id:"tailleband",label:"TAILLEBAND"},
-    {id:"schouderbanden",label:"SCHOUDERBANDEN"},
-    {id:"verstel",label:"VERSTELBAARHEID & SYSTEEM"},
-    {id:"rugpand",label:"RUGPAND"},
-    {id:"slaapkapje",label:"SLAAPKAPJE / FLAP"},
-    {id:"veiligheid",label:"VEILIGHEID & EXPERTINFO"},
-    {id:"extras",label:"EXTRA’S"}
-  ],
-  fields:[
-    {id:"merk",label:"MERK",group:"algemeen",layer:"basis",type:"text"},
-    {id:"model",label:"MODEL",group:"algemeen",layer:"basis",type:"text"},
-    {id:"type_drager",label:"TYPE DRAGER",group:"algemeen",layer:"basis",type:"chips",
-     options:["FULL BUCKLE","MEH DAI / MEI TAI","RINGSLING","REKBARE DOEK","GEWEVEN DOEK","HALF BUCKLE"]},
-    {id:"versie_variant",label:"VERSIE / VARIANT",group:"algemeen",layer:"basis",type:"text"}
-  ]
-};
-
-/* ============ LAGEN LOGICA ============ */
 function layerActive(layer,path){
   if(layer==="basis") return true;
-  if(layer==="uitgebreid") return path==="vergelijk";
-  if(layer==="expert") return false;
+  if(layer==="uitgebreid") return path==="vergelijk"; // UITGEBREID actief in IK VERGELIJK
+  if(layer==="expert") return false;                   // EXPERT voorlopig grijs
   return false;
 }
 
-/* ============ FILTER UI ============ */
+/* Velden renderen */
 function createField(f,path){
   const active=layerActive(f.layer,path);
-  const wrapper=document.createElement("div");
-  wrapper.className="field"+(active?"":" is-disabled");
+  const wrap=document.createElement("div");
+  wrap.className="field"+(active?"":" is-disabled");
 
   const head=document.createElement("div");
-  head.style.display="flex";
-  head.style.justifyContent="space-between";
-  head.style.alignItems="center";
+  head.style.display="flex"; head.style.justifyContent="space-between"; head.style.alignItems="center";
   head.innerHTML=`
     <div class="field-label">${f.label}</div>
     <div class="badges">
       <span class="badge">${f.layer.toUpperCase()}</span>
-      ${active?"":"<span style='display:inline-flex;gap:4px;'>🔒 <span>"+(f.tooltip||("Beschikbaar in "+f.layer.toUpperCase()))+"</span></span>"}
+      ${active ? "" : `<span style="display:inline-flex;gap:4px;">🔒 <span>${f.tooltip || `Beschikbaar in ${f.layer.toUpperCase()}`}</span></span>`}
     </div>`;
-  wrapper.appendChild(head);
+  wrap.appendChild(head);
 
   const controls=document.createElement("div");
   controls.className="field-controls";
+  const disable = el => { if(!active){ el.disabled=true; el.setAttribute("aria-disabled","true"); } };
 
-  function disable(el){ if(!active){ el.disabled=true; el.setAttribute("aria-disabled","true"); } }
-
-  if(f.type==="chips"){
-    const box=document.createElement("div");
-    box.className="chips";
-    (f.options||[]).forEach(opt=>{
-      const chip=document.createElement("button");
-      chip.className="chip"; chip.type="button";
-      chip.textContent=opt;
-      chip.setAttribute("aria-pressed","false");
-      if(active){
-        chip.onclick=()=>chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed")==="true"?"false":"true");
-      } else { disable(chip); }
-      box.appendChild(chip);
-    });
-    controls.appendChild(box);
-  }
-  else if(f.type==="checkbox"){
-    (f.options||[]).forEach(opt=>{
-      const lab=document.createElement("label");
-      lab.className="toggle";
-      const inp=document.createElement("input");
-      inp.type="checkbox"; disable(inp);
-      const sp=document.createElement("span"); sp.textContent=opt;
-      lab.append(inp,sp);
-      controls.appendChild(lab);
-    });
-  }
-  else if(f.type==="toggle"){
-    const lab=document.createElement("label"); lab.className="toggle";
-    const inp=document.createElement("input"); inp.type="checkbox"; disable(inp);
-    const sp=document.createElement("span"); sp.textContent="JA/NEE";
-    lab.append(inp,sp);
-    controls.appendChild(lab);
-  }
-  else if(f.type==="select"){
-    const sel=document.createElement("select");
-    (f.options||[]).forEach(opt=>{
-      const o=document.createElement("option");
-      o.value=opt; o.textContent=opt;
-      sel.appendChild(o);
-    });
-    disable(sel);
-    controls.appendChild(sel);
-  }
-  else if(f.type==="number"){
-    const inp=document.createElement("input");
-    inp.type="number"; inp.placeholder="0"; disable(inp);
-    controls.appendChild(inp);
-  }
-  else{ // text/default
-    const inp=document.createElement("input");
-    inp.type="text"; inp.placeholder="—"; disable(inp);
-    controls.appendChild(inp);
+  switch(f.type){
+    case "chips":{
+      const box=document.createElement("div"); box.className="chips";
+      (f.options||[]).forEach(opt=>{
+        const chip=document.createElement("button");
+        chip.type="button"; chip.className="chip"; chip.textContent=opt; chip.setAttribute("aria-pressed","false");
+        if(active){
+          chip.addEventListener("click",()=>{
+            const p=chip.getAttribute("aria-pressed")==="true";
+            chip.setAttribute("aria-pressed", String(!p));
+          });
+        } else { disable(chip); }
+        box.appendChild(chip);
+      });
+      controls.appendChild(box);
+      break;
+    }
+    case "checkbox":{
+      (f.options||[]).forEach(opt=>{
+        const lab=document.createElement("label"); lab.className="toggle";
+        const inp=document.createElement("input"); inp.type="checkbox"; disable(inp);
+        const sp=document.createElement("span"); sp.textContent=opt;
+        lab.append(inp,sp); controls.appendChild(lab);
+      });
+      break;
+    }
+    case "toggle":{
+      const lab=document.createElement("label"); lab.className="toggle";
+      const inp=document.createElement("input"); inp.type="checkbox"; disable(inp);
+      const sp=document.createElement("span"); sp.textContent="JA/NEE";
+      lab.append(inp,sp); controls.appendChild(lab);
+      break;
+    }
+    case "select":{
+      const sel=document.createElement("select");
+      (f.options||[]).forEach(opt=>{
+        const o=document.createElement("option"); o.value=opt; o.textContent=opt; sel.appendChild(o);
+      });
+      disable(sel); controls.appendChild(sel);
+      break;
+    }
+    case "number":{
+      const inp=document.createElement("input"); inp.type="number"; inp.placeholder="0"; disable(inp);
+      controls.appendChild(inp); break;
+    }
+    case "text":
+    default:{
+      const inp=document.createElement("input"); inp.type="text"; inp.placeholder="—"; disable(inp);
+      controls.appendChild(inp); break;
+    }
   }
 
-  wrapper.appendChild(controls);
-  return wrapper;
+  wrap.appendChild(controls);
+  return wrap;
 }
 
 function renderFilters(path){
   const basic=document.getElementById(`filters-${path}-basic`);
-  const more=document.getElementById(`filters-${path}-more`);
+  const more =document.getElementById(`filters-${path}-more`);
+  if(!basic || !more) return;
   basic.innerHTML=""; more.innerHTML="";
 
+  // Per groep: BASIS omhoog, rest bij "Meer filters"
   FILTERS.groups.forEach(g=>{
     const fields=FILTERS.fields.filter(f=>f.group===g.id);
     const basics=fields.filter(f=>f.layer==="basis");
     const others=fields.filter(f=>f.layer!=="basis");
 
     if(basics.length){
-      const grp=document.createElement("section");
-      grp.className="group";
-      grp.innerHTML=`<div class="group-header">
+      const sec=document.createElement("section"); sec.className="group";
+      sec.innerHTML=`<div class="group-header">
         <div class="group-title">${g.label}</div>
         <div class="badges"><span class="badge">BASIS</span></div>
       </div>`;
-      basics.forEach(f=>grp.appendChild(createField(f,path)));
-      basic.appendChild(grp);
+      basics.forEach(f=>sec.appendChild(createField(f,path)));
+      basic.appendChild(sec);
     }
 
     if(others.length){
-      const grp=document.createElement("section");
-      grp.className="group";
+      const sec=document.createElement("section"); sec.className="group";
       const hasU=others.some(f=>f.layer==="uitgebreid");
       const hasE=others.some(f=>f.layer==="expert");
-      grp.innerHTML=`<div class="group-header">
+      sec.innerHTML=`<div class="group-header">
         <div class="group-title">${g.label}</div>
         <div class="badges">
           ${hasU?'<span class="badge">UITGEBREID</span>':''}
           ${hasE?'<span class="badge">EXPERT</span>':''}
         </div>
       </div>`;
-      others.forEach(f=>grp.appendChild(createField(f,path)));
-      more.appendChild(grp);
+      others.forEach(f=>sec.appendChild(createField(f,path)));
+      more.appendChild(sec);
     }
   });
 }
 
-/* ============ INIT EVENTS ============ */
-document.addEventListener("DOMContentLoaded",()=>{
-
-  /* Scherm 1 */
+/* ========= 4) Init ========= */
+document.addEventListener("DOMContentLoaded", async ()=>{
+  // Navigatie events
   document.getElementById("btn-next-1").onclick=()=>goTo("screen-2");
-
-  /* Scherm 2 */
   document.getElementById("btn-back-2").onclick=()=>goTo("screen-1");
   document.getElementById("btn-next-2").onclick=()=>goTo("screen-3");
 
-  /* Scherm 3 */
   document.getElementById("btn-back-3").onclick=()=>goTo("screen-2");
-
-  document.getElementById("card-zoek").onclick=()=>{
-    lastChoice="zoek"; updateNav(); renderFilters("zoek"); goTo("screen-4-zoek");
-  };
-  document.getElementById("card-vergelijk").onclick=()=>{
-    lastChoice="vergelijk"; updateNav(); renderFilters("vergelijk"); goTo("screen-4-vergelijk");
-  };
-
+  document.getElementById("card-zoek").onclick=()=>{ lastChoice="zoek"; updateNav(); renderFilters("zoek"); goTo("screen-4-zoek"); };
+  document.getElementById("card-vergelijk").onclick=()=>{ lastChoice="vergelijk"; updateNav(); renderFilters("vergelijk"); goTo("screen-4-vergelijk"); };
   document.getElementById("btn-next-3").onclick=()=>{
     if(lastChoice==="zoek") goTo("screen-4-zoek");
     if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
   };
 
-  /* MEER FILTERS toggles */
   document.getElementById("toggle-more-zoek").onclick=e=>{
     const p=document.getElementById("filters-zoek-more");
     const exp=e.currentTarget.getAttribute("aria-expanded")==="true";
@@ -529,27 +540,27 @@ document.addEventListener("DOMContentLoaded",()=>{
     p.hidden=exp; e.currentTarget.setAttribute("aria-expanded", String(!exp));
   };
 
-  /* Scherm 4A → 5 */
   document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
   document.getElementById("btn-next-4-zoek").onclick=()=>{
     document.getElementById("selected-filters").textContent="Gekozen pad: IK ZOEK";
     goTo("screen-5-results");
   };
 
-  /* Scherm 4B → 5 */
   document.getElementById("btn-back-4-vergelijk").onclick=()=>goTo("screen-3");
   document.getElementById("btn-next-4-vergelijk").onclick=()=>{
     document.getElementById("selected-filters").textContent="Gekozen pad: IK VERGELIJK";
     goTo("screen-5-results");
   };
 
-  /* Scherm 5 terug */
-  document.getElementById("btn-back-5").onclick=()=>{
-    if(lastChoice==="zoek") goTo("screen-4-zoek");
-    if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
-  };
+  // 1) laad beide tabbladen uit jouw Google Sheet
+  try{
+    const [g,f] = await Promise.all([ fetchGVizJSON('groups'), fetchGVizJSON('fields') ]);
+    FILTERS = { groups: makeGroups(g), fields: makeFields(f) };
+  }catch(err){
+    console.error('Kon Google Sheet niet laden:', err);
+    FILTERS = { groups:[], fields:[] }; // val terug zodat de app niet crasht
+  }
 
-  /* Init UI state */
   updateIcon();
   updateNav();
 });
