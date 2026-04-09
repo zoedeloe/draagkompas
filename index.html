@@ -1,158 +1,118 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Draagkompas</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<header id="app-header" class="hidden">
-  <img src="assets/img/header-icon.png" class="logo-img" alt="icoon">
-  <img src="assets/img/header-text.png" class="logo-img" alt="tekst">
-</header>
+<!-- ICONEN — standaard verborgen -->
+<div id="header-icons" class="header-icons hidden">
+  <img src="assets/img/header-icon.png" class="icon-left" alt="icon">
+  <img src="assets/img/header-text.png" class="icon-right" alt="text">
+</div>
 
-<main class="app">
+<main>
 
-  <!-- SCHERM 1 — Intro -->
+  <!-- SCHERM 1 -->
   <section id="screen-1" class="screen active">
-    <div class="screen1-wrapper">
-      <div class="intro-inner">
-        <img src="assets/img/logo.png" class="intro-logo" alt="logo">
-        <div class="nav-row">
-          <button id="btn-next-1" class="btn btn-primary">VERDER</button>
-        </div>
-      </div>
+    <div class="center">
+      <img src="assets/img/logo.png" class="intro-logo" alt="logo">
+      <button id="go-2" class="btn btn-primary">VERDER</button>
     </div>
   </section>
 
-  <!-- SCHERM 2 — Disclaimer -->
+  <!-- SCHERM 2 -->
   <section id="screen-2" class="screen">
-    <div class="screen2-wrapper">
-      <figure class="disclaimer-figure">
-        <img src="assets/img/draagkompas-disclaimer.png" class="screen2-image" alt="disclaimer">
-      </figure>
+    <div class="center">
+      <img src="assets/img/draagkompas-disclaimer.png" class="disclaimer" alt="disclaimer">
       <div class="nav-row">
-        <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
-        <button id="btn-next-2" class="btn btn-primary">VERDER</button>
+        <button id="back-1" class="btn btn-secondary">TERUG</button>
+        <button id="go-3" class="btn btn-primary">VERDER</button>
       </div>
     </div>
   </section>
 
-  <!-- SCHERM 3 — Keuze -->
+  <!-- SCHERM 3 -->
   <section id="screen-3" class="screen">
-    <div class="screen3-wrapper">
+    <div class="choice-grid">
 
-      <div class="choice-grid">
-        <button id="card-zoek" class="choice-card" data-choice="zoek">
-          <span class="choice-icon">🔍</span>
-          <span class="choice-title">IK ZOEK</span>
-          <span class="choice-sub">Vind een draagmiddel op maat van jouw baby.</span>
-        </button>
+      <button class="choice-card" id="choose-zoek" data-target="screen-4-zoek">
+        <span class="choice-icon">🔍</span>
+        <span class="choice-title">IK ZOEK</span>
+        <span class="choice-sub">Vind een draagmiddel op maat van jouw baby.</span>
+      </button>
 
-        <button id="card-vergelijk" class="choice-card" data-choice="vergelijk">
-          <span class="choice-icon">⚖️</span>
-          <span class="choice-title">IK VERGELIJK</span>
-          <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
-        </button>
-      </div>
+      <button class="choice-card" id="choose-vergelijk" data-target="screen-4-vergelijk">
+        <span class="choice-icon">⚖️</span>
+        <span class="choice-title">IK VERGELIJK</span>
+        <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
+      </button>
 
-      <div class="nav-row">
-        <button id="btn-back-3" class="btn btn-secondary">TERUG</button>
-        <button id="btn-next-3" class="btn btn-primary" disabled>VERDER</button>
-      </div>
+    </div>
 
+    <div class="nav-row">
+      <button id="back-2" class="btn btn-secondary">TERUG</button>
     </div>
   </section>
 
-  <!-- SCHERM 4 — FILTER (IK ZOEK / IK VERGELIJK) -->
-  <section id="screen-4" class="screen">
-    <div class="filters-wrapper">
+  <!-- SCHERM 4 — ZOEK -->
+  <section id="screen-4-zoek" class="screen">
+    <h2>Zoekmodule</h2>
+    <p>Hier komt jouw zoekmodule.</p>
 
-      <div class="filters-head">
-        <h2>Filter jouw draagmiddel</h2>
-      </div>
+    <div class="nav-row">
+      <button data-target="screen-3" class="btn btn-secondary go-back">TERUG</button>
+    </div>
+  </section>
 
-      <div class="filters-section">
+  <!-- SCHERM 4 — VERGELIJK -->
+  <section id="screen-4-vergelijk" class="screen">
+    <h2>Vergelijkmodule</h2>
+    <p>Hier komt jouw vergelijkmodule.</p>
 
-        <div class="group">
-          <div class="group-header">
-            <span class="group-title">Leeftijd / gewicht</span>
-          </div>
-          <div class="field">
-            <label class="field-label">Leeftijd</label>
-            <select id="filter-age">
-              <option value="">Alle leeftijden</option>
-              <option>0–3 maanden</option>
-              <option>3–9 maanden</option>
-              <option>9–24 maanden</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="group-header">
-            <span class="group-title">Type drager</span>
-          </div>
-          <div class="chips">
-            <span class="chip" data-type="rekbaar">Rekbare doek</span>
-            <span class="chip" data-type="geweven">Geweven doek</span>
-            <span class="chip" data-type="mei-tai">Mei Tai</span>
-            <span class="chip" data-type="ssc">Ergonomische drager</span>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="group-header">
-            <span class="group-title">Kenmerken</span>
-          </div>
-          <div class="field-controls">
-            <label class="toggle"><input type="checkbox"> Snel aan te doen</label>
-            <label class="toggle"><input type="checkbox"> Past meerdere maten</label>
-            <label class="toggle"><input type="checkbox"> Budgetvriendelijk</label>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="nav-row">
-        <button id="btn-back-4" class="btn btn-secondary">TERUG</button>
-      </div>
-
+    <div class="nav-row">
+      <button data-target="screen-3" class="btn btn-secondary go-back">TERUG</button>
     </div>
   </section>
 
 </main>
 
 <script>
-let keuze = null;
-
-function show(id){
+function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
-  // iconen tonen vanaf scherm 3
-  document.getElementById("app-header").classList.toggle("hidden", id === "screen-1" || id === "screen-2");
+  const header = document.getElementById("header-icons");
+
+  // iconen enkel vanaf scherm 3
+  if (id === "screen-3" || id === "screen-4-zoek" || id === "screen-4-vergelijk") {
+    header.classList.remove("hidden");
+  } else {
+    header.classList.add("hidden");
+  }
 }
 
-document.getElementById("btn-next-1").onclick = () => show("screen-2");
-document.getElementById("btn-back-2").onclick = () => show("screen-1");
-document.getElementById("btn-next-2").onclick = () => show("screen-3");
-document.getElementById("btn-back-3").onclick = () => show("screen-2");
+// Navigatie scherm 1 -> 2
+document.getElementById("go-2").onclick = () => show("screen-2");
+document.getElementById("back-1").onclick = () => show("screen-1");
 
-document.querySelectorAll(".choice-card").forEach(card => {
-  card.addEventListener("click", () => {
-    keuze = card.dataset.choice;
-    document.getElementById("btn-next-3").disabled = false;
-    document.querySelectorAll(".choice-card").forEach(c => c.classList.remove("selected"));
-    card.classList.add("selected");
-  });
+// Scherm 2 -> 3
+document.getElementById("go-3").onclick = () => show("screen-3");
+document.getElementById("back-2").onclick = () => show("screen-2");
+
+// Scherm 3 klikken op keuze → direct naar doel-scherm
+document.getElementById("choose-zoek").onclick = () => show("screen-4-zoek");
+document.getElementById("choose-vergelijk").onclick = () => show("screen-4-vergelijk");
+
+// terug van scherm 4 naar scherm 3
+document.querySelectorAll(".go-back").forEach(btn => {
+  btn.onclick = () => show(btn.dataset.target);
 });
-
-document.getElementById("btn-next-3").onclick = () => show("screen-4");
-document.getElementById("btn-back-4").onclick = () => show("screen-3");
 </script>
 
 </body>
