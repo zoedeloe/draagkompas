@@ -144,7 +144,7 @@ select, input[type="number"], input[type="text"] { background: #201a6b; color: v
   object-fit: contain;
 }
 
-.choice-card {
+button, .choice-card {
   position: relative;
   z-index: 200;
 }
