@@ -1,29 +1,22 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
-
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
 
-<main id="app">
+<header id="app-header" class="hidden">
+  <img src="assets/img/header-icon.png" class="logo-img" alt="icoon">
+  <img src="assets/img/header-text.png" class="logo-img" alt="tekst">
+</header>
 
-  <!-- ICONEN -->
-  <div class="floating-icon">
-    <img src="assets/img/header-icon.png" alt="icon">
-  </div>
+<main class="app">
 
-  <div class="floating-text">
-    <img src="assets/img/header-text.png" alt="text">
-  </div>
-
-  <!-- SCHERM 1 -->
+  <!-- SCHERM 1 — Intro -->
   <section id="screen-1" class="screen active">
     <div class="screen1-wrapper">
       <div class="intro-inner">
@@ -35,10 +28,10 @@
     </div>
   </section>
 
-  <!-- SCHERM 2 -->
+  <!-- SCHERM 2 — Disclaimer -->
   <section id="screen-2" class="screen">
     <div class="screen2-wrapper">
-      <figure>
+      <figure class="disclaimer-figure">
         <img src="assets/img/draagkompas-disclaimer.png" class="screen2-image" alt="disclaimer">
       </figure>
       <div class="nav-row">
@@ -48,7 +41,7 @@
     </div>
   </section>
 
-  <!-- SCHERM 3 -->
+  <!-- SCHERM 3 — Keuze -->
   <section id="screen-3" class="screen">
     <div class="screen3-wrapper">
 
@@ -74,21 +67,60 @@
     </div>
   </section>
 
-  <!-- SCHERM 4 – ZOEK -->
-  <section id="screen-4-zoek" class="screen">
-    <h2>Zoekmodule</h2>
-    <p>Hier komt jouw zoekmodule.</p>
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="show('screen-3')">TERUG</button>
-    </div>
-  </section>
+  <!-- SCHERM 4 — FILTER (IK ZOEK / IK VERGELIJK) -->
+  <section id="screen-4" class="screen">
+    <div class="filters-wrapper">
 
-  <!-- SCHERM 4 – VERGELIJK -->
-  <section id="screen-4-vergelijk" class="screen">
-    <h2>Vergelijkmodule</h2>
-    <p>Hier komt jouw vergelijkmodule.</p>
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="show('screen-3')">TERUG</button>
+      <div class="filters-head">
+        <h2>Filter jouw draagmiddel</h2>
+      </div>
+
+      <div class="filters-section">
+
+        <div class="group">
+          <div class="group-header">
+            <span class="group-title">Leeftijd / gewicht</span>
+          </div>
+          <div class="field">
+            <label class="field-label">Leeftijd</label>
+            <select id="filter-age">
+              <option value="">Alle leeftijden</option>
+              <option>0–3 maanden</option>
+              <option>3–9 maanden</option>
+              <option>9–24 maanden</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-header">
+            <span class="group-title">Type drager</span>
+          </div>
+          <div class="chips">
+            <span class="chip" data-type="rekbaar">Rekbare doek</span>
+            <span class="chip" data-type="geweven">Geweven doek</span>
+            <span class="chip" data-type="mei-tai">Mei Tai</span>
+            <span class="chip" data-type="ssc">Ergonomische drager</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-header">
+            <span class="group-title">Kenmerken</span>
+          </div>
+          <div class="field-controls">
+            <label class="toggle"><input type="checkbox"> Snel aan te doen</label>
+            <label class="toggle"><input type="checkbox"> Past meerdere maten</label>
+            <label class="toggle"><input type="checkbox"> Budgetvriendelijk</label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="nav-row">
+        <button id="btn-back-4" class="btn btn-secondary">TERUG</button>
+      </div>
+
     </div>
   </section>
 
@@ -98,11 +130,11 @@
 let keuze = null;
 
 function show(id){
-  document.querySelectorAll(".screen").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
   // iconen tonen vanaf scherm 3
-  document.body.classList.toggle("show-icon", id !== "screen-1" && id !== "screen-2");
+  document.getElementById("app-header").classList.toggle("hidden", id === "screen-1" || id === "screen-2");
 }
 
 document.getElementById("btn-next-1").onclick = () => show("screen-2");
@@ -110,23 +142,17 @@ document.getElementById("btn-back-2").onclick = () => show("screen-1");
 document.getElementById("btn-next-2").onclick = () => show("screen-3");
 document.getElementById("btn-back-3").onclick = () => show("screen-2");
 
-// keuze op scherm 3
 document.querySelectorAll(".choice-card").forEach(card => {
   card.addEventListener("click", () => {
     keuze = card.dataset.choice;
     document.getElementById("btn-next-3").disabled = false;
-
-    // active styling
     document.querySelectorAll(".choice-card").forEach(c => c.classList.remove("selected"));
     card.classList.add("selected");
   });
 });
 
-// verder op scherm 3
-document.getElementById("btn-next-3").onclick = () => {
-  if(keuze === "zoek") show("screen-4-zoek");
-  if(keuze === "vergelijk") show("screen-4-vergelijk");
-};
+document.getElementById("btn-next-3").onclick = () => show("screen-4");
+document.getElementById("btn-back-4").onclick = () => show("screen-3");
 </script>
 
 </body>
