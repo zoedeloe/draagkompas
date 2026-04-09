@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -5,53 +6,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
 
-  <!-- Montserrat (consistente look) -->
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap">
 
   <style>
-    /* ======================== BASIS ============================ */
     *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html,body{ height:100%; margin:0; }
     body{
-      margin:0;
       background:#0f0b3a;
       color:#fff;
-      font-family: Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
-    }
-    :root{
-      --bg:#0f0b3a; --card:#15104a; --ink:#fff; --muted:#cfd3ff;
-      --accent:#ff7a59; --accent-ink:#1a1446;
-      --line:rgba(255,255,255,0.15); --panel:#1b165c;
-      --floating-h: 110px;   /* icon hoogte */
+      font-family: Montserrat, system-ui, sans-serif;
     }
 
-    /* ==================== ZWEVENDE ICONEN (nu absolute, NIET fixed) ===================== */
-    .floating-icon{
-      position:absolute;
-      top:20px;
-      left:20px;
-      z-index:100;
-      display:none;
+    :root{
+      --bg:#0f0b3a; 
+      --card:#15104a;
+      --ink:#fff; 
+      --muted:#cfd3ff;
+      --accent:#ff7a59; 
+      --accent-ink:#1a1446;
+      --line:rgba(255,255,255,0.15);
+      --panel:#1b165c;
+      --floating-h:110px;
     }
+
+    /* ---------- ICONEN (NU absolute en meescrollend) ---------- */
+    .floating-icon,
     .floating-text{
       position:absolute;
       top:20px;
-      right:20px;
-      z-index:101;
+      z-index:100;
       display:none;
     }
+    .floating-icon{ left:20px; }
+    .floating-text{ right:20px; }
+
     body.show-icon .floating-icon,
-    body.show-icon .floating-text{ display:block; }
+    body.show-icon .floating-text{
+      display:block;
+    }
 
     .floating-icon img,
     .floating-text img{
-      height: var(--floating-h);
-      width: auto;
-      display: block;
+      height:var(--floating-h);
+      width:auto;
+      display:block;
     }
 
-    /* ==================== SCHERMEN ====================== */
+    /* ---------- SCHERMEN ---------- */
     .screen{
       display:none;
       min-height:100svh;
@@ -59,56 +61,58 @@
     }
     .screen.active{ display:block; }
 
+    /* Vanaf scherm 3: vaste ruimte bovenaan */
+    #screen-3,
+    #screen-4-zoek,
+    #screen-4-vergelijk,
+    #screen-5-results {
+      padding-top:150px !important;
+    }
+
+    @media(max-width:720px){
+      #screen-3,
+      #screen-4-zoek,
+      #screen-4-vergelijk,
+      #screen-5-results {
+        padding-top:180px !important;
+      }
+    }
+
+    /* ---------- Buttons ---------- */
     .nav-row{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      margin-top:12px;
+      display:flex; gap:12px; justify-content:space-between; margin-top:12px;
     }
     .btn{
-      border:none;
-      padding:14px 22px;
-      border-radius:12px;
-      font-weight:800;
-      cursor:pointer;
-      font-family:inherit;
+      border:none; padding:14px 22px;
+      border-radius:12px; font-weight:800;
+      cursor:pointer; font-family:inherit;
     }
-    .btn-primary{
-      background:var(--accent);
-      color:var(--accent-ink);
-    }
-    .btn-secondary{
-      background:#2a246f;
-      color:#fff;
-    }
+    .btn-primary{ background:var(--accent); color:var(--accent-ink); }
+    .btn-secondary{ background:#2a246f; color:#fff; }
     .btn[disabled]{ opacity:.5; cursor:not-allowed; }
 
-    /* ==================== SCHERM 1 ====================== */
-    #btn-back-1{ display:none !important; }
-
+    /* ---------- SCHERM 1 ---------- */
+    #btn-back-1{ display:none!important; }
     .screen1-wrapper{
-      display:grid;
-      place-items:center;
-      min-height:100svh;
+      display:grid; place-items:center; min-height:100svh;
     }
+    .intro-logo{ width:min(95%,1100px); height:auto; }
 
-    /* ==================== SCHERM 2 ====================== */
+    /* ---------- SCHERM 2 ---------- */
     .screen2-wrapper{ max-width:1100px; margin:0 auto; display:grid; gap:20px; }
-
-    /* ==================== SCHERM 3 — vanaf hier ALTIJD meer ruimte ====================== */
-    .screen3-wrapper{
-      max-width:1100px; margin:0 auto;
-      display:grid; gap:28px;
-      padding-top:200px;  /* <<< NOOIT MEER OVERLAP */
-      padding-bottom:40px;
+    .screen2-image{
+      width:100%; border-radius:12px;
+      box-shadow:0 8px 28px rgba(0,0,0,.35);
     }
+
+    /* ---------- SCHERM 3 ---------- */
+    .screen3-wrapper{ max-width:1100px; margin:0 auto; display:grid; gap:28px; }
 
     .choice-grid{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:20px;
-      align-items:center;
+      display:grid; grid-template-columns:repeat(2,1fr);
+      gap:20px; align-items:center;
     }
+    @media(max-width:700px){ .choice-grid{ grid-template-columns:1fr; } }
 
     .choice-card{
       background:var(--card);
@@ -118,46 +122,16 @@
       display:grid;
       gap:18px;
       cursor:pointer;
-      min-height:260px;
     }
-
     .choice-icon{ font-size:40px; }
-    .choice-title{
-      font-size:28px;
-      font-weight:800;
-      letter-spacing:0.06em;
-      text-transform:uppercase;
-      color:#fff;
-    }
-    .choice-sub{
-      font-size:16px;
-      color:var(--muted);
-    }
+    .choice-title{ font-size:28px; font-weight:800; letter-spacing:.06em; }
+    .choice-sub{ font-size:16px; color:var(--muted); }
 
-    @media(max-width:720px){
-      .choice-grid{ grid-template-columns:1fr; }
-      .screen3-wrapper{ padding-top:240px; }  /* extra buffer op mobiel */
-    }
+    /* ---------- SCHERM 4 ---------- */
+    .filters-wrapper{ max-width:1100px; margin:0 auto; display:grid; gap:20px; }
 
-    /* ==================== SCHERM 4 EN 5 — zelfde padding-top ====================== */
-    .filters-wrapper,
-    .results-wrapper{
-      max-width:1100px;
-      margin:0 auto;
-      padding-top:200px;   /* <<< HIER OOK NOOIT MEER OVERLAP */
-      display:grid;
-      gap:20px;
-    }
-
-    @media(max-width:720px){
-      .filters-wrapper,
-      .results-wrapper{
-        padding-top:240px;
-      }
-    }
-
-    /* === rest CSS unchanged === */
     .filters-section{ display:grid; gap:16px; }
+
     .group{
       background:var(--card);
       border:1px solid var(--line);
@@ -165,11 +139,12 @@
       padding:14px;
     }
     .group-header{
-      display:flex; justify-content:space-between; align-items:center;
-      margin-bottom:10px;
+      display:flex; justify-content:space-between;
+      align-items:center; margin-bottom:10px;
     }
     .group-title{ font-weight:800; }
-    .badges{ display:flex; gap:6px; align-items:center; }
+
+    .badges{ display:flex; gap:6px; }
     .badge{
       border:1px solid var(--line);
       padding:2px 6px;
@@ -184,47 +159,36 @@
     select,input[type="text"],input[type="number"]{
       background:#201a6b;
       border:1px solid var(--line);
-      color:#fff;
-      padding:8px 10px;
-      border-radius:8px;
-      min-width:180px;
+      color:#fff; padding:8px 10px;
+      border-radius:8px; min-width:180px;
     }
 
-    .chip{
-      padding:8px 12px;
-      border-radius:999px;
-      background:#201a6b;
-      border:1px solid var(--line);
-      cursor:pointer;
-    }
-    .chip[aria-pressed="true"]{
-      background:var(--accent);
-      color:var(--accent-ink);
-    }
-
-    .toggle{ display:flex; gap:8px; align-items:center; }
     .is-disabled{ opacity:.55; }
-    .is-disabled *{ pointer-events:none !important; cursor:not-allowed !important; }
+    .is-disabled *{ pointer-events:none!important; }
 
-    .more-panel{
-      background:var(--panel);
-      border:1px dashed var(--line);
-      padding:12px;
-      border-radius:12px;
+    /* ---------- SCHERM 5 ---------- */
+    .results-wrapper{ max-width:900px; margin:0 auto; display:grid; gap:16px; }
+    .results-summary{
+      background:#201a6b; border:1px solid var(--line);
+      border-radius:10px; padding:12px;
+      white-space:pre-wrap;
     }
+
   </style>
 </head>
-<body>
-<!-- ICONEN -->
-<div class="floating-icon">
-  <img src="assets/img/header-icon.png" alt="">
-</div>
 
-<div class="floating-text">
-  <img src="assets/img/header-text.png" alt="">
-</div>
+<body>
 
 <main id="app">
+
+  <!-- ICONEN NU BINNEN HET MAIN-BLOK (cruciaal) -->
+  <div class="floating-icon">
+    <img src="assets/img/header-icon.png" alt="">
+  </div>
+
+  <div class="floating-text">
+    <img src="assets/img/header-text.png" alt="">
+  </div>
 
   <!-- SCHERM 1 -->
   <section id="screen-1" class="screen active">
@@ -281,11 +245,14 @@
       <div class="filters-head">
         <div class="layer-hint">BASIS zichtbaar; UITGEBREID/EXPERT zijn grijs (🔒)</div>
       </div>
+
       <div id="filters-zoek-basic" class="filters-section"></div>
+
       <div class="filters-more">
-        <button id="toggle-more-zoek" class="btn btn-tertiary" aria-expanded="false">MEER FILTERS</button>
+        <button id="toggle-more-zoek" class="btn" aria-expanded="false">MEER FILTERS</button>
         <div id="filters-zoek-more" class="more-panel" hidden></div>
       </div>
+
       <div class="nav-row">
         <button id="btn-back-4-zoek" class="btn btn-secondary">TERUG</button>
         <button id="btn-next-4-zoek" class="btn btn-primary">VERDER</button>
@@ -299,11 +266,14 @@
       <div class="filters-head">
         <div class="layer-hint">BASIS + UITGEBREID actief; EXPERT is grijs (🔒)</div>
       </div>
+
       <div id="filters-vergelijk-basic" class="filters-section"></div>
+
       <div class="filters-more">
-        <button id="toggle-more-vergelijk" class="btn btn-tertiary" aria-expanded="false">MEER FILTERS</button>
+        <button id="toggle-more-vergelijk" class="btn" aria-expanded="false">MEER FILTERS</button>
         <div id="filters-vergelijk-more" class="more-panel" hidden></div>
       </div>
+
       <div class="nav-row">
         <button id="btn-back-4-vergelijk" class="btn btn-secondary">TERUG</button>
         <button id="btn-next-4-vergelijk" class="btn btn-primary">VERDER</button>
@@ -315,7 +285,10 @@
   <section id="screen-5-results" class="screen">
     <div class="results-wrapper">
       <h2>RESULTATEN</h2>
-      <pre id="selected-filters" class="results-summary">Nog geen filters geselecteerd.</pre>
+      <pre id="selected-filters" class="results-summary">
+Nog geen filters geselecteerd.
+      </pre>
+
       <div class="nav-row">
         <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
         <button id="btn-next-5" class="btn btn-primary" disabled>VERDER</button>
@@ -325,72 +298,77 @@
 
 </main>
 
+<!-- ========= SCRIPT: FILTERS LADEN UIT GOOGLE SHEET ========= -->
 <script>
-/* ========= 0) Jouw Google Sheet ID ========= */
-const GOOGLE_SHEET_ID = '16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto';
+const GOOGLE_SHEET_ID = "16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto";
 
-/* ========= 1) Google Sheets via gviz ========= */
 async function fetchGVizJSON(sheetName){
-  const base = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq`;
-  const url  = `${base}?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=&_=${Date.now()}`;
+  const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${sheetName}&_=${Date.now()}`;
   const resp = await fetch(url);
   const text = await resp.text();
-  const match = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
-  if(!match) throw new Error('GViz response mismatch');
+  const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
+  if(!match) throw new Error("Slechte Google Sheet response");
   const data = JSON.parse(match[1]);
-  const rows = (data.table.rows || []).map(r => (r.c||[]).map(c => c ? c.v : ''));
-  const headers = (data.table.cols || []).map(c => c.label);
+  const headers = data.table.cols.map(c => c.label);
+  const rows = data.table.rows.map(r => r.c.map(c => c ? c.v : ""));
   return {headers, rows};
 }
 
-/* ========= 2) Mapping naar lokalere data ========= */
-function makeGroups(g){
-  const idx = Object.fromEntries(g.headers.map((h,i)=>[h.toLowerCase(), i]));
-  return g.rows.map(r=>({
-    id:String(r[idx.id]),
-    label:String(r[idx.label]),
-    order:Number(r[idx.order])
+function makeIndex(headers){
+  return Object.fromEntries(headers.map((h,i)=>[h.toLowerCase(), i]));
+}
+
+function makeGroups(sheet){
+  const idx = makeIndex(sheet.headers);
+  return sheet.rows.map(r => ({
+    id:     r[idx.id],
+    label:  r[idx.label],
+    order:  Number(r[idx.order])
   })).sort((a,b)=>a.order-b.order);
 }
 
-function makeFields(f){
-  const idx = Object.fromEntries(f.headers.map((h,i)=>[h.toLowerCase(), i]));
-  return f.rows.map(r=>{
-    const opts = String(r[idx.options]||'').split('|').map(s=>s.trim()).filter(Boolean);
-    return {
-      id:String(r[idx.id]),
-      label:String(r[idx.label]),
-      group:String(r[idx.group]),
-      layer:String(r[idx.layer]),
-      type:String(r[idx.type]),
-      options:opts,
-      tooltip:String(r[idx.tooltip]||''),
-      order:Number(r[idx.order])
-    }
-  }).sort((a,b)=>a.order-b.order);
+function makeFields(sheet){
+  const idx = makeIndex(sheet.headers);
+  return sheet.rows.map(r => ({
+    id:       r[idx.id],
+    label:    r[idx.label],
+    group:    r[idx.group],
+    layer:    r[idx.layer],
+    type:     r[idx.type],
+    options:  (r[idx.options]||"").split("|").map(s=>s.trim()).filter(Boolean),
+    tooltip:  r[idx.tooltip] || "",
+    order:    Number(r[idx.order])
+  })).sort((a,b)=>a.order-b.order);
 }
 
-/* ========= 3) UI-elementen renderen ========= */
-const SCREENS=["screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
+const SCREENS=[
+  "screen-1","screen-2","screen-3",
+  "screen-4-zoek","screen-4-vergelijk",
+  "screen-5-results"
+];
 let lastChoice=null;
-let FILTERS = {groups:[], fields:[]};
+let FILTERS={groups:[], fields:[]};
 
 function goTo(id){
-  SCREENS.forEach(s=>document.getElementById(s).classList.toggle("active", s===id));
+  SCREENS.forEach(s=>{
+    document.getElementById(s).classList.toggle("active", s===id);
+  });
   updateIcon();
   updateNav();
 }
 
 function updateIcon(){
-  const idx = SCREENS.findIndex(s=>document.getElementById(s).classList.contains("active"));
-  if(idx >= 2) document.body.classList.add("show-icon");
+  const index = SCREENS.findIndex(s =>
+    document.getElementById(s).classList.contains("active")
+  );
+  if(index >= 2) document.body.classList.add("show-icon");
   else document.body.classList.remove("show-icon");
 }
 
 function updateNav(){
-  const next3 = document.getElementById("btn-next-3");
-  if(next3){
-    next3.disabled = !lastChoice;
+  const btnNext3 = document.getElementById("btn-next-3");
+  if(btnNext3){
+    btnNext3.disabled = !lastChoice;
   }
 }
 
@@ -404,66 +382,33 @@ function layerActive(layer,path){
 function createField(f,path){
   const active = layerActive(f.layer,path);
   const wrap = document.createElement("div");
-  wrap.className="field" + (active?"":" is-disabled");
+  wrap.className="field" + (active ? "" : " is-disabled");
 
-  const head = document.createElement("div");
-  head.style.display="flex";
-  head.style.justifyContent="space-between";
-  head.style.alignItems="center";
-
-  head.innerHTML = `
+  wrap.innerHTML = `
     <div class="field-label">${f.label}</div>
-    <div class="badges">
-      <span class="badge">${f.layer.toUpperCase()}</span>
-      ${ active ? "" : `<span style="display:flex;gap:4px;">🔒 ${f.tooltip||''}</span>` }
-    </div>
   `;
-  wrap.appendChild(head);
 
   const controls = document.createElement("div");
   controls.className="field-controls";
 
-  const disable = el => { if(!active){ el.disabled=true; el.setAttribute("aria-disabled","true"); } }
-
   if(f.type==="chips"){
-    const box = document.createElement("div");
+    const box=document.createElement("div");
     box.className="chips";
     f.options.forEach(opt=>{
-      const chip=document.createElement("button");
-      chip.type="button";
-      chip.className="chip";
-      chip.textContent=opt;
-      chip.setAttribute("aria-pressed","false");
+      const btn=document.createElement("button");
+      btn.className="chip";
+      btn.type="button";
+      btn.textContent=opt;
+      btn.setAttribute("aria-pressed","false");
       if(active){
-        chip.onclick=()=>chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed")==="true"?"false":"true");
-      } else disable(chip);
-      box.appendChild(chip);
+        btn.onclick=()=>{
+          const v=btn.getAttribute("aria-pressed")==="true";
+          btn.setAttribute("aria-pressed", String(!v));
+        }
+      }
+      box.appendChild(btn);
     });
     controls.appendChild(box);
-  }
-  else if(f.type==="checkbox"){
-    f.options.forEach(opt=>{
-      const lab=document.createElement("label");
-      lab.className="toggle";
-      const inp=document.createElement("input");
-      inp.type="checkbox";
-      disable(inp);
-      const sp=document.createElement("span");
-      sp.textContent=opt;
-      lab.append(inp,sp);
-      controls.appendChild(lab);
-    });
-  }
-  else if(f.type==="toggle"){
-    const lab=document.createElement("label");
-    lab.className="toggle";
-    const inp=document.createElement("input");
-    inp.type="checkbox";
-    disable(inp);
-    const sp=document.createElement("span");
-    sp.textContent="JA/NEE";
-    lab.append(inp,sp);
-    controls.appendChild(lab);
   }
   else if(f.type==="select"){
     const sel=document.createElement("select");
@@ -472,19 +417,28 @@ function createField(f,path){
       o.value=opt; o.textContent=opt;
       sel.appendChild(o);
     });
-    disable(sel);
+    if(!active) sel.disabled=true;
     controls.appendChild(sel);
+  }
+  else if(f.type==="toggle"){
+    const lab=document.createElement("label");
+    const inp=document.createElement("input");
+    inp.type="checkbox";
+    if(!active) inp.disabled=true;
+    lab.appendChild(inp);
+    lab.appendChild(document.createTextNode(" JA/NEE"));
+    controls.appendChild(lab);
   }
   else if(f.type==="number"){
     const inp=document.createElement("input");
     inp.type="number";
-    disable(inp);
+    if(!active) inp.disabled=true;
     controls.appendChild(inp);
   }
   else{
     const inp=document.createElement("input");
     inp.type="text";
-    disable(inp);
+    if(!active) inp.disabled=true;
     controls.appendChild(inp);
   }
 
@@ -495,8 +449,7 @@ function createField(f,path){
 function renderFilters(path){
   const basic = document.getElementById(`filters-${path}-basic`);
   const more  = document.getElementById(`filters-${path}-more`);
-  basic.innerHTML = "";
-  more.innerHTML  = "";
+  basic.innerHTML=""; more.innerHTML="";
 
   FILTERS.groups.forEach(g=>{
     const fields = FILTERS.fields.filter(f=>f.group===g.id);
@@ -506,11 +459,10 @@ function renderFilters(path){
     if(basics.length){
       const sec=document.createElement("section");
       sec.className="group";
-      sec.innerHTML = `
-        <div class="group-header">
-          <div class="group-title">${g.label}</div>
-          <div class="badges"><span class="badge">BASIS</span></div>
-        </div>`;
+      sec.innerHTML=`<div class="group-header">
+        <div class="group-title">${g.label}</div>
+        <div class="badges"><span class="badge">BASIS</span></div>
+      </div>`;
       basics.forEach(f=>sec.appendChild(createField(f,path)));
       basic.appendChild(sec);
     }
@@ -518,80 +470,76 @@ function renderFilters(path){
     if(others.length){
       const sec=document.createElement("section");
       sec.className="group";
-      const hasU = others.some(f=>f.layer==="uitgebreid");
-      const hasE = others.some(f=>f.layer==="expert");
-      sec.innerHTML = `
-        <div class="group-header">
-          <div class="group-title">${g.label}</div>
-          <div class="badges">
-            ${ hasU ? '<span class="badge">UITGEBREID</span>' : '' }
-            ${ hasE ? '<span class="badge">EXPERT</span>'     : '' }
-          </div>
-        </div>`;
+      const hasU=others.some(f=>f.layer==="uitgebreid");
+      const hasE=others.some(f=>f.layer==="expert");
+      sec.innerHTML=`<div class="group-header">
+        <div class="group-title">${g.label}</div>
+        <div class="badges">
+          ${hasU?'<span class="badge">UITGEBREID</span>':''}
+          ${hasE?'<span class="badge">EXPERT</span>':''}
+        </div>
+      </div>`;
       others.forEach(f=>sec.appendChild(createField(f,path)));
       more.appendChild(sec);
     }
   });
 }
 
-/* ========= 4) INIT ========= */
 document.addEventListener("DOMContentLoaded", async ()=>{
   document.getElementById("btn-next-1").onclick=()=>goTo("screen-2");
-
   document.getElementById("btn-back-2").onclick=()=>goTo("screen-1");
   document.getElementById("btn-next-2").onclick=()=>goTo("screen-3");
-
   document.getElementById("btn-back-3").onclick=()=>goTo("screen-2");
 
   document.getElementById("card-zoek").onclick=()=>{
-    lastChoice="zoek";
-    updateNav();
-    renderFilters("zoek");
+    lastChoice="zoek"; updateNav(); renderFilters("zoek");
     goTo("screen-4-zoek");
   };
+
   document.getElementById("card-vergelijk").onclick=()=>{
-    lastChoice="vergelijk";
-    updateNav();
-    renderFilters("vergelijk");
+    lastChoice="vergelijk"; updateNav(); renderFilters("vergelijk");
     goTo("screen-4-vergelijk");
   };
 
   document.getElementById("btn-next-3").onclick=()=>{
     if(lastChoice==="zoek") goTo("screen-4-zoek");
-    if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
+    else if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
   };
 
   document.getElementById("toggle-more-zoek").onclick=e=>{
-    const tgt = document.getElementById("filters-zoek-more");
-    const exp = e.currentTarget.getAttribute("aria-expanded")==="true";
-    tgt.hidden = exp;
-    e.currentTarget.setAttribute("aria-expanded", String(!exp));
+    const tgt=document.getElementById("filters-zoek-more");
+    const exp=e.target.getAttribute("aria-expanded")==="true";
+    tgt.hidden=exp; 
+    e.target.setAttribute("aria-expanded", String(!exp));
   };
+
   document.getElementById("toggle-more-vergelijk").onclick=e=>{
-    const tgt = document.getElementById("filters-vergelijk-more");
-    const exp = e.currentTarget.getAttribute("aria-expanded")==="true";
-    tgt.hidden = exp;
-    e.currentTarget.setAttribute("aria-expanded", String(!exp));
+    const tgt=document.getElementById("filters-vergelijk-more");
+    const exp=e.target.getAttribute("aria-expanded")==="true";
+    tgt.hidden=exp;
+    e.target.setAttribute("aria-expanded", String(!exp));
   };
 
   document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
+  document.getElementById("btn-back-4-vergelijk").onclick=()=>goTo("screen-3");
+
   document.getElementById("btn-next-4-zoek").onclick=()=>{
-    document.getElementById("selected-filters").textContent = "Gekozen pad: IK ZOEK";
+    document.getElementById("selected-filters").textContent=
+      "Gekozen pad: IK ZOEK";
     goTo("screen-5-results");
   };
 
-  document.getElementById("btn-back-4-vergelijk").onclick=()=>goTo("screen-3");
   document.getElementById("btn-next-4-vergelijk").onclick=()=>{
-    document.getElementById("selected-filters").textContent = "Gekozen pad: IK VERGELIJK";
+    document.getElementById("selected-filters").textContent=
+      "Gekozen pad: IK VERGELIJK";
     goTo("screen-5-results");
   };
 
   document.getElementById("btn-back-5").onclick=()=>{
     if(lastChoice==="zoek") goTo("screen-4-zoek");
-    if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
+    else goTo("screen-4-vergelijk");
   };
 
-  /* Load Google Sheet */
   try{
     const [g,f] = await Promise.all([
       fetchGVizJSON("groups"),
@@ -600,7 +548,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     FILTERS.groups = makeGroups(g);
     FILTERS.fields = makeFields(f);
   }catch(e){
-    console.error("Sheet load error:", e);
+    console.error("Kon Google Sheet niet laden:", e);
   }
 
   updateIcon();
@@ -610,3 +558,4 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 </body>
 </html>
+
