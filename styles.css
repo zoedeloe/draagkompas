@@ -1,78 +1,59 @@
-
-/* ====== BASIS ====== */
-* {
-  box-sizing: border-box;
-}
-html, body {
-  height: 100%;
-  margin: 0;
-}
+/* ===== Basis ===== */
+* { box-sizing: border-box; }
 body {
+  margin: 0;
   background: #0f0b3a;
-  color: #fff;
+  color: white;
   font-family: Montserrat, sans-serif;
 }
 
-/* ====== FLOATING ICONS ====== */
-.floating-icon, .floating-text {
-  position: absolute;
-  top: 20px;
-  z-index: 100;
-  display: none;
-  pointer-events: none; /* blokkeert nooit kliks */
-}
-.floating-icon { left: 20px; }
-.floating-text { right: 20px; }
+.hidden { display: none !important; }
 
-body.show-icon .floating-icon,
-body.show-icon .floating-text {
-  display: block;
+/* ===== Header ===== */
+#app-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  padding: 10px 16px;
+  display: flex;
+  gap: 10px;
+  z-index: 50;
+  background: rgba(15,10,60,0.85);
+  backdrop-filter: blur(10px);
 }
-
-.floating-icon img,
-.floating-text img {
-  height: 80px;
+.logo-img {
+  height: 40px;
   width: auto;
 }
 
-/* ====== SCHERMEN ====== */
+/* ===== Schermen ===== */
 .screen {
   display: none;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   padding: 40px 16px;
 }
 .screen.active {
   display: block;
 }
 
-@media(max-width:720px){
-  .screen { padding-top: 60px; }
-}
-
-/* ====== NAV ROW ====== */
+/* ===== Navigatie ===== */
 .nav-row {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
 }
-
 .btn {
   padding: 14px 22px;
-  border: none;
   border-radius: 12px;
+  border: none;
   font-weight: 800;
   cursor: pointer;
 }
-.btn-primary { background:#ff7a59; color:#1a1446; }
-.btn-secondary { background:#2a246f; color:#fff; }
+.btn-primary { background: #ff7a59; color: #1a1446; }
+.btn-secondary { background: #2a246f; color: white; }
 .btn:disabled { opacity: .4; }
 
-/* ====== SCHERM 1 ====== */
-.screen1-wrapper {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-}
+/* ===== Scherm 1 ===== */
 .intro-inner {
   display: grid;
   gap: 24px;
@@ -83,48 +64,70 @@ body.show-icon .floating-text {
   height: auto;
 }
 
-/* ====== SCHERM 2 ====== */
+/* ===== Scherm 2 ===== */
 .screen2-image {
   width: 100%;
-  height: auto;
-  display: block;
+  border-radius: 10px;
 }
 
-/* ====== SCHERM 3 ====== */
+/* ===== Scherm 3 ===== */
 .screen3-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.choice-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+}
+.choice-card {
+  background: #15104a;
+  padding: 24px;
+  border-radius: 18px;
+  cursor: pointer;
+  display: grid;
+  gap: 12px;
+  border: 2px solid transparent;
+}
+.choice-card:hover {
+  background: #1d1960;
+}
+.choice-card.selected {
+  border-color: #ff7a59;
+}
+.choice-icon { font-size: 40px; }
+.choice-title { font-size: 28px; font-weight: 800; }
+
+/* ===== Filters ===== */
+.filters-wrapper {
   max-width: 900px;
   margin: 0 auto;
   display: grid;
   gap: 24px;
 }
-
-.choice-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+.group {
+  background: #15104a;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
 }
-@media(max-width:700px){
-  .choice-grid { grid-template-columns: 1fr; }
+.group-title {
+  font-size: 18px;
+  font-weight: 700;
 }
-
-.choice-card {
-  background:#15104a;
-  border:1px solid rgba(255,255,255,0.2);
-  padding:28px;
-  border-radius:18px;
-  cursor:pointer;
-  display:grid;
-  gap:12px;
-  transition: .2s;
+.field { margin-top: 10px; display: grid; gap: 8px; }
+select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #201a6b;
+  color: white;
 }
-.choice-card:hover {
-  background:#1e1a62;
+.chips { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #201a6b;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.2);
 }
-.choice-card.selected {
-  border-color:#ff7a59;
-  background:#2a256c;
-}
-
-.choice-icon { font-size:40px; }
-.choice-title { font-size:28px; font-weight:800; color:#fff; }
-.choice-sub { color:#cfd3ff; }
+.chip:hover { background: #3126a2; }
