@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -29,7 +30,6 @@
       --floating-h:110px;
     }
 
-    /* ICONEN – absolute, meescrollend */
     .floating-icon,
     .floating-text{
       position:absolute;
@@ -50,7 +50,6 @@
       display:block;
     }
 
-    /* SCHERMEN */
     .screen{
       display:none;
       min-height:100svh;
@@ -58,7 +57,6 @@
     }
     .screen.active{ display:block; }
 
-    /* Vanaf scherm 3 vaste ruimte bovenaan */
     #screen-3,
     #screen-4-zoek,
     #screen-4-vergelijk,
@@ -75,8 +73,7 @@
     }
 
     .nav-row{
-      display:flex; gap:12px; justify-content:space-between;
-      margin-top:12px;
+      display:flex; gap:12px; justify-content:space-between; margin-top:12px;
     }
     .btn{
       border:none; padding:14px 22px; border-radius:12px;
@@ -86,40 +83,37 @@
     .btn-secondary{ background:#2a246f; color:#fff; }
     .btn[disabled]{ opacity:.5; cursor:not-allowed; }
 
-    /* SCHERM 1 */
     #btn-back-1{ display:none!important; }
+
     .screen1-wrapper{
-      display:grid; place-items:center;
+      display:grid; 
+      place-items:center;
       min-height:100svh;
     }
     .intro-inner{
-      display:grid; gap:24px; justify-items:center;
-      max-width:1100px;
+      display:grid; gap:24px; justify-items:center; max-width:1100px;
     }
     .intro-logo{ width:min(95%,1100px); height:auto; }
 
-    /* SCHERM 2 */
     .screen2-wrapper{
-      max-width:1100px; margin:0 auto; display:grid; gap:20px;
+      max-width:1100px; margin:0 auto;
+      display:grid; gap:20px;
     }
     .screen2-image{
-      width:100%; border-radius:12px;
+      width:100%;
+      border-radius:12px;
       box-shadow:0 8px 28px rgba(0,0,0,.35);
     }
 
-    /* SCHERM 3 */
     .screen3-wrapper{
       max-width:1100px; margin:0 auto;
       display:grid; gap:28px;
     }
     .choice-grid{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:20px; align-items:center;
+      display:grid; gap:20px; grid-template-columns:repeat(2,1fr);
     }
-    @media(max-width:700px){
-      .choice-grid{ grid-template-columns:1fr; }
-    }
+    @media(max-width:700px){ .choice-grid{ grid-template-columns:1fr; } }
+
     .choice-card{
       background:var(--card);
       border:1px solid var(--line);
@@ -128,16 +122,15 @@
       display:grid; gap:18px;
       cursor:pointer;
     }
+
     .choice-icon{ font-size:40px; }
     .choice-title{
-      font-size:28px;
-      font-weight:800;
+      font-size:28px; font-weight:800;
+      color:white;
       letter-spacing:.06em;
-      color:#fff;
     }
-    .choice-sub{ font-size:16px; color:var(--muted); }
+    .choice-sub{ color:var(--muted); }
 
-    /* SCHERM 4 */
     .filters-wrapper{
       max-width:1100px; margin:0 auto;
       display:grid; gap:20px;
@@ -147,20 +140,20 @@
     .group{
       background:var(--card);
       border:1px solid var(--line);
-      border-radius:14px; padding:14px;
+      border-radius:14px;
+      padding:14px;
     }
     .group-header{
-      display:flex; justify-content:space-between;
-      align-items:center; margin-bottom:10px;
+      display:flex; justify-content:space-between; margin-bottom:10px;
     }
     .group-title{ font-weight:800; }
 
-    .badges{ display:flex; gap:6px; }
     .badge{
       border:1px solid var(--line);
       padding:2px 6px;
       border-radius:999px;
-      font-size:11px; color:var(--muted);
+      font-size:11px;
+      color:var(--muted);
     }
 
     .field{ display:grid; gap:6px; margin:10px 0; }
@@ -176,19 +169,17 @@
       min-width:180px;
     }
 
-    .is-disabled{ opacity:.55; }
-    .is-disabled *{ pointer-events:none!important; }
-
-    /* SCHERM 5 */
     .results-wrapper{
       max-width:900px; margin:0 auto;
       display:grid; gap:16px;
     }
     .results-summary{
-      background:#201a6b; border:1px solid var(--line);
-      border-radius:10px; padding:12px;
-      white-space:pre-wrap;
+      background:#201a6b;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:12px;
     }
+
   </style>
 </head>
 
@@ -196,20 +187,18 @@
 
 <main id="app">
 
-  <!-- ICONEN – CORRECT -->
   <div class="floating-icon">
-    <img src="assets/img/header-icon.png" alt="">
+    assets/img/header-icon.png
   </div>
 
   <div class="floating-text">
-    <img src="assets/img/header-text.png" alt="">
+    assets/img/header-text.png
   </div>
 
-  <!-- SCHERM 1 -->
   <section id="screen-1" class="screen active">
     <div class="screen1-wrapper">
       <div class="intro-inner">
-        <img src="assets/img/logo.png" class="intro-logo" alt="Logo">
+        assets/img/logo.png
         <div class="nav-row">
           <button id="btn-back-1" class="btn btn-secondary">TERUG</button>
           <button id="btn-next-1" class="btn btn-primary">VERDER</button>
@@ -218,11 +207,10 @@
     </div>
   </section>
 
-  <!-- SCHERM 2 -->
   <section id="screen-2" class="screen">
     <div class="screen2-wrapper">
       <figure>
-        <img src="assets/img/draagkompas-disclaimer.png" class="screen2-image" alt="">
+        assets/img/draagkompas-disclaimer.png
       </figure>
       <div class="nav-row">
         <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
@@ -231,12 +219,10 @@
     </div>
   </section>
 
-  <!-- SCHERM 3 -->
   <section id="screen-3" class="screen">
     <div class="screen3-wrapper">
 
       <div class="choice-grid">
-
         <button id="card-zoek" class="choice-card">
           <span class="choice-icon">🔍</span>
           <span class="choice-title">IK ZOEK</span>
@@ -248,7 +234,6 @@
           <span class="choice-title">IK VERGELIJK</span>
           <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
         </button>
-
       </div>
 
       <div class="nav-row">
@@ -259,12 +244,10 @@
     </div>
   </section>
 
-  <!-- SCHERM 4A -->
   <section id="screen-4-zoek" class="screen">
     <div class="filters-wrapper">
-
       <div class="filters-head">
-        <div class="layer-hint">BASIS zichtbaar; UITGEBREID/EXPERT zijn grijs (🔒)</div>
+        BASIС zichtbaar; UITGEBREID/EXPERT grijs
       </div>
 
       <div id="filters-zoek-basic" class="filters-section"></div>
@@ -278,16 +261,14 @@
         <button id="btn-back-4-zoek" class="btn btn-secondary">TERUG</button>
         <button id="btn-next-4-zoek" class="btn btn-primary">VERDER</button>
       </div>
-
     </div>
   </section>
 
-  <!-- SCHERM 4B -->
   <section id="screen-4-vergelijk" class="screen">
     <div class="filters-wrapper">
 
       <div class="filters-head">
-        <div class="layer-hint">BASIS + UITGEBREID actief; EXPERT is grijs (🔒)</div>
+        BASIS + UITGEBREID actief; EXPERT grijs
       </div>
 
       <div id="filters-vergelijk-basic" class="filters-section"></div>
@@ -305,13 +286,13 @@
     </div>
   </section>
 
-  <!-- SCHERM 5 -->
   <section id="screen-5-results" class="screen">
     <div class="results-wrapper">
 
       <h2>RESULTATEN</h2>
-
-      <pre id="selected-filters" class="results-summary">Nog geen filters geselecteerd.</pre>
+      <pre id="selected-filters" class="results-summary">
+Nog geen filters geselecteerd.
+      </pre>
 
       <div class="nav-row">
         <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
@@ -323,202 +304,165 @@
 
 </main>
 
-
 <script>
 const GOOGLE_SHEET_ID = "16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto";
 
-async function fetchGVizJSON(sheetName){
-  const url =
-    `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq`+
-    `?tqx=out:json&sheet=${sheetName}&_=${Date.now()}`;
-  const resp = await fetch(url);
-  const text = await resp.text();
-  const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
-  if(!match) throw new Error("GViz fout");
-  const data = JSON.parse(match[1]);
-  const headers = data.table.cols.map(c => c.label);
-  const rows = data.table.rows.map(r => r.c.map(c => c ? c.v : ""));
-  return {headers, rows};
+async function fetchGVizJSON(sheet){
+  const url=`https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${sheet}&_=${Date.now()}`;
+  const r=await fetch(url);
+  const t=await r.text();
+  const m=t.match(/setResponse\(([\s\S]*?)\);/);
+  const j=JSON.parse(m[1]);
+  const headers=j.table.cols.map(c=>c.label);
+  const rows=j.table.rows.map(r=>r.c.map(c=>c?c.v:""));
+  return {headers,rows};
 }
 
-function mapIndex(headers){
-  return Object.fromEntries(headers.map((h,i)=>[h.toLowerCase(), i]));
+function idx(hdr){ return Object.fromEntries(hdr.map((h,i)=>[h.toLowerCase(),i])); }
+function mapGroups(s){
+  const i=idx(s.headers);
+  return s.rows.map(r=>({id:r[i.id],label:r[i.label],order:+r[i.order]})).sort((a,b)=>a.order-b.order);
 }
-
-function makeGroups(sheet){
-  const idx = mapIndex(sheet.headers);
-  return sheet.rows.map(r=>({
-    id:r[idx.id], label:r[idx.label], order:Number(r[idx.order])
+function mapFields(s){
+  const i=idx(s.headers);
+  return s.rows.map(r=>({
+    id:r[i.id], label:r[i.label], group:r[i.group],
+    layer:r[i.layer], type:r[i.type],
+    options:(r[i.options]||"").split("|").map(s=>s.trim()).filter(Boolean),
+    tooltip:r[i.tooltip]||"",
+    order:+r[i.order]
   })).sort((a,b)=>a.order-b.order);
 }
 
-function makeFields(sheet){
-  const idx = mapIndex(sheet.headers);
-  return sheet.rows.map(r=>({
-    id:r[idx.id],
-    label:r[idx.label],
-    group:r[idx.group],
-    layer:r[idx.layer],
-    type:r[idx.type],
-    options:(r[idx.options]||"").split("|").map(s=>s.trim()).filter(Boolean),
-    tooltip:r[idx.tooltip]||"",
-    order:Number(r[idx.order])
-  })).sort((a,b)=>a.order-b.order);
-}
-
-const SCREENS=[
-  "screen-1","screen-2","screen-3",
-  "screen-4-zoek","screen-4-vergelijk",
-  "screen-5-results"
-];
+const SCREENS=[ "screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results" ];
 let lastChoice=null;
 let FILTERS={groups:[],fields:[]};
 
 function goTo(id){
-  SCREENS.forEach(s=>{
-    document.getElementById(s).classList.toggle("active",s===id);
-  });
+  SCREENS.forEach(s=>document.getElementById(s).classList.toggle("active",s===id));
   updateIcon();
   updateNav();
 }
-
 function updateIcon(){
-  const idx = SCREENS.findIndex(
-    s=>document.getElementById(s).classList.contains("active")
-  );
-  if(idx>=2) document.body.classList.add("show-icon");
+  const active=SCREENS.findIndex(s=>document.getElementById(s).classList.contains("active"));
+  if(active>=2) document.body.classList.add("show-icon");
   else document.body.classList.remove("show-icon");
 }
-
 function updateNav(){
-  const btn=document.getElementById("btn-next-3");
-  if(btn) btn.disabled = !lastChoice;
+  const b=document.getElementById("btn-next-3");
+  if(b) b.disabled=!lastChoice;
 }
 
-function layerActive(layer,path){
-  if(layer==="basis") return true;
-  if(layer==="uitgebreid") return path==="vergelijk";
-  return false;
-}
+function layerOK(l,p){ return l==="basis"|| (l==="uitgebreid" && p==="vergelijk"); }
 
-function createField(f,path){
-  const active = layerActive(f.layer,path);
-  const wrap=document.createElement("div");
-  wrap.className="field"+(active?"":" is-disabled");
+function fieldHTML(f,path){
+  const ok=layerOK(f.layer,path);
+  const w=document.createElement("div");
+  w.className="field"+(ok?"":" is-disabled");
 
-  const label=document.createElement("div");
-  label.className="field-label";
-  label.textContent=f.label;
-  wrap.appendChild(label);
+  const L=document.createElement("div");
+  L.className="field-label";
+  L.textContent=f.label;
+  w.appendChild(L);
 
-  const controls=document.createElement("div");
-  controls.className="field-controls";
+  const c=document.createElement("div");
+  c.className="field-controls";
 
-  function disable(el){ if(!active) el.disabled=true; }
+  function dis(el){ if(!ok) el.disabled=true; }
 
   if(f.type==="chips"){
-    const box=document.createElement("div");
-    box.className="chips";
-    f.options.forEach(opt=>{
-      const c=document.createElement("button");
-      c.type="button"; c.className="chip";
-      c.textContent=opt;
-      c.setAttribute("aria-pressed","false");
-      if(active){
-        c.onclick=()=>{
-          const v=c.getAttribute("aria-pressed")==="true";
-          c.setAttribute("aria-pressed",String(!v));
+    const box=document.createElement("div"); box.className="chips";
+    f.options.forEach(o=>{
+      const b=document.createElement("button");
+      b.className="chip"; b.type="button";
+      b.textContent=o; b.setAttribute("aria-pressed","false");
+      if(ok){
+        b.onclick=()=>{
+          const val=b.getAttribute("aria-pressed")==="true";
+          b.setAttribute("aria-pressed",String(!val));
         };
       }
-      box.appendChild(c);
+      box.appendChild(b);
     });
-    controls.appendChild(box);
+    c.appendChild(box);
   }
-
   else if(f.type==="select"){
-    const sel=document.createElement("select");
-    f.options.forEach(opt=>{
-      const o=document.createElement("option");
-      o.value=opt; o.textContent=opt;
-      sel.appendChild(o);
+    const s=document.createElement("select");
+    f.options.forEach(o=>{
+      const opt=document.createElement("option");
+      opt.value=o; opt.textContent=o;
+      s.appendChild(opt);
     });
-    disable(sel);
-    controls.appendChild(sel);
+    dis(s); c.appendChild(s);
   }
-
   else if(f.type==="toggle"){
     const lab=document.createElement("label");
     const inp=document.createElement("input");
     inp.type="checkbox";
-    disable(inp);
+    dis(inp);
     lab.appendChild(inp);
     lab.append(" JA/NEE");
-    controls.appendChild(lab);
+    c.appendChild(lab);
   }
-
   else if(f.type==="number"){
     const inp=document.createElement("input");
     inp.type="number";
-    disable(inp);
-    controls.appendChild(inp);
+    dis(inp);
+    c.appendChild(inp);
   }
-
-  else{
+  else {
     const inp=document.createElement("input");
     inp.type="text";
-    disable(inp);
-    controls.appendChild(inp);
+    dis(inp);
+    c.appendChild(inp);
   }
 
-  wrap.appendChild(controls);
-  return wrap;
+  w.appendChild(c);
+  return w;
 }
 
 function renderFilters(path){
-  const basic=document.getElementById(`filters-${path}-basic`);
-  const more=document.getElementById(`filters-${path}-more`);
-  basic.innerHTML=""; more.innerHTML="";
+  const b=document.getElementById(`filters-${path}-basic`);
+  const m=document.getElementById(`filters-${path}-more`);
+  b.innerHTML=""; m.innerHTML="";
 
   FILTERS.groups.forEach(g=>{
-    const flds = FILTERS.fields.filter(f=>f.group===g.id);
-    const basics=flds.filter(f=>f.layer==="basis");
-    const others=flds.filter(f=>f.layer!=="basis");
+    const f=FILTERS.fields.filter(x=>x.group===g.id);
+    const fb=f.filter(x=>x.layer==="basis");
+    const fo=f.filter(x=>x.layer!=="basis");
 
-    if(basics.length){
+    if(fb.length){
       const sec=document.createElement("section");
       sec.className="group";
-      sec.innerHTML=`
-        <div class="group-header">
-          <div class="group-title">${g.label}</div>
-          <div class="badges"><span class="badge">BASIS</span></div>
-        </div>`;
-      basics.forEach(f=>sec.appendChild(createField(f,path)));
-      basic.appendChild(sec);
+      sec.innerHTML=`<div class="group-header">
+        <div class="group-title">${g.label}</div>
+        <div class="badges"><span class="badge">BASIS</span></div>
+      </div>`;
+      fb.forEach(x=>sec.appendChild(fieldHTML(x,path)));
+      b.appendChild(sec);
     }
 
-    if(others.length){
+    if(fo.length){
       const sec=document.createElement("section");
       sec.className="group";
+      const hasU=fo.some(x=>x.layer==="uitgebreid");
+      const hasE=fo.some(x=>x.layer==="expert");
 
-      const hasU=others.some(f=>f.layer==="uitgebreid");
-      const hasE=others.some(f=>f.layer==="expert");
+      sec.innerHTML=`<div class="group-header">
+        <div class="group-title">${g.label}</div>
+        <div class="badges">
+          ${hasU?'<span class="badge">UITGEBREID</span>':''}
+          ${hasE?'<span class="badge">EXPERT</span>':''}
+        </div>
+      </div>`;
 
-      sec.innerHTML=`
-       <div class="group-header">
-         <div class="group-title">${g.label}</div>
-         <div class="badges">
-           ${hasU?'<span class="badge">UITGEBREID</span>':''}
-           ${hasE?'<span class="badge">EXPERT</span>':''}
-         </div>
-       </div>`;
-
-      others.forEach(f=>sec.appendChild(createField(f,path)));
-      more.appendChild(sec);
+      fo.forEach(x=>sec.appendChild(fieldHTML(x,path)));
+      m.appendChild(sec);
     }
   });
 }
 
-document.addEventListener("DOMContentLoaded", async ()=>{
+document.addEventListener("DOMContentLoaded", async()=>{
 
   document.getElementById("btn-next-1").onclick=()=>goTo("screen-2");
   document.getElementById("btn-back-2").onclick=()=>goTo("screen-1");
@@ -527,12 +471,16 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   document.getElementById("btn-back-3").onclick=()=>goTo("screen-2");
 
   document.getElementById("card-zoek").onclick=()=>{
-    lastChoice="zoek"; updateNav(); renderFilters("zoek");
+    lastChoice="zoek";
+    updateNav();
+    renderFilters("zoek");
     goTo("screen-4-zoek");
   };
 
   document.getElementById("card-vergelijk").onclick=()=>{
-    lastChoice="vergelijk"; updateNav(); renderFilters("vergelijk");
+    lastChoice="vergelijk";
+    updateNav();
+    renderFilters("vergelijk");
     goTo("screen-4-vergelijk");
   };
 
@@ -542,17 +490,17 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   };
 
   document.getElementById("toggle-more-zoek").onclick=e=>{
-    const tgt=document.getElementById("filters-zoek-more");
-    const exp=e.target.getAttribute("aria-expanded")==="true";
-    tgt.hidden=exp;
-    e.target.setAttribute("aria-expanded",String(!exp));
+    const tg=document.getElementById("filters-zoek-more");
+    const ex=e.target.getAttribute("aria-expanded")==="true";
+    tg.hidden=ex;
+    e.target.setAttribute("aria-expanded",String(!ex));
   };
 
   document.getElementById("toggle-more-vergelijk").onclick=e=>{
-    const tgt=document.getElementById("filters-vergelijk-more");
-    const exp=e.target.getAttribute("aria-expanded")==="true";
-    tgt.hidden=exp;
-    e.target.setAttribute("aria-expanded",String(!exp));
+    const tg=document.getElementById("filters-vergelijk-more");
+    const ex=e.target.getAttribute("aria-expanded")==="true";
+    tg.hidden=ex;
+    e.target.setAttribute("aria-expanded",String(!ex));
   };
 
   document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
@@ -574,15 +522,14 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   };
 
   try{
-    const [g,f]=await Promise.all([
+    const[g,f]=await Promise.all([
       fetchGVizJSON("groups"),
       fetchGVizJSON("fields")
     ]);
-    FILTERS.groups = makeGroups(g);
-    FILTERS.fields = makeFields(f);
-  }catch(e){
-    console.error("Google Sheet error:",e);
-  }
+    FILTERS.groups=mapGroups(g);
+    FILTERS.fields=mapFields(f);
+
+  }catch(e){ console.error(e); }
 
   updateIcon();
   updateNav();
@@ -591,4 +538,3 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 </body>
 </html>
-
