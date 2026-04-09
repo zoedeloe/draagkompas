@@ -1,117 +1,568 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
 
+  <!-- Montserrat (consistente look) -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ======================== BASIS ============================ */
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:#0f0b3a;
+      color:#fff;
+      font-family: Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+    }
+    :root{
+      --bg:#0f0b3a; --card:#15104a; --ink:#fff; --muted:#cfd3ff;
+      --accent:#ff7a59; --accent-ink:#1a1446;
+      --line:rgba(255,255,255,0.15); --panel:#1b165c;
+
+      /* hoogte van beide zwevende iconen */
+      --floating-h: 110px;
+    }
+
+    /* ==================== ZWEVENDE ICONEN (vanaf scherm 3) ===================== */
+    .floating-icon{
+      position:fixed; top:14px; left:14px; z-index:100; display:none;
+    }
+    .floating-text{
+      position:fixed; top:20px; right:20px; z-index:101; display:none;
+    }
+    body.show-icon .floating-icon,
+    body.show-icon .floating-text{ display:block; }
+
+    .floating-icon img,
+    .floating-text img{
+      height: var(--floating-h);
+      width: auto;
+      display: block;
+    }
+
+    /* ==================== SCHERMEN ====================== */
+    .screen{ display:none; min-height:100svh; padding:16px; }
+    .screen.active{ display:block; }
+
+    .nav-row{
+      display:flex; justify-content:space-between; gap:12px; margin-top:12px;
+    }
+    .btn{
+      border:none; padding:14px 22px; border-radius:12px;
+      font-weight:800; cursor:pointer; font-family:inherit;
+    }
+    .btn-primary{
+      background:var(--accent); color:var(--accent-ink);
+    }
+    .btn-secondary{
+      background:#2a246f; color:#fff;
+    }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+    /* ==================== SCHERM 1 ====================== */
+    .screen1-wrapper{ display:grid; place-items:center; min-height:100svh; }
+    .intro-inner{ display:grid; gap:24px; justify-items:center; max-width:1100px; }
+    .intro-logo{ width:min(95%,1100px); height:auto; display:block; }
+
+    /* VERBERG TERUG op scherm 1 volledig (ook niet focusbaar) */
+    #btn-back-1{ display:none !important; }
+
+    /* ==================== SCHERM 2 ====================== */
+    .screen2-wrapper{ max-width:1100px; margin:0 auto; display:grid; gap:20px; }
+    .screen2-image{
+      width:100%; border-radius:12px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.35);
+    }
+
+    /* ==================== SCHERM 3 ====================== */
+    .screen3-wrapper{
+      max-width:1100px; margin:0 auto;
+      display:grid; gap:28px;
+      /* Extra top-ruimte zodat de keuzevakken onder de zwevende iconen vallen */
+      padding-top: calc(var(--floating-h) + 60px);   /* 110 + 60 = 170px */
+      padding-bottom: 40px;
+    }
+    .choice-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:20px;
+      align-items:center;
+    }
+    .choice-card{
+      background:var(--card); border:1px solid var(--line);
+      border-radius:18px; padding:28px;
+      display:grid; gap:18px; cursor:pointer;
+      min-height:260px;
+    }
+    .choice-icon{ font-size:40px; }
+
+    /* TITELS in wit + CAPS + Montserrat */
+    .choice-title{
+      font-size:28px;
+      font-weight:800;
+      letter-spacing:0.06em;
+      text-transform: uppercase;
+      color: #ffffff;           /* WIT */
+    }
+    /* SUB in Montserrat (muted kleur) */
+    .choice-sub{
+      font-size:16px;
+      color: var(--muted);
+    }
+
+    @media(max-width:720px){
+      .choice-grid{ grid-template-columns:1fr; }
+      /* Op mobiel: nog wat extra top-ruimte (zeker geen overlap) */
+      .screen3-wrapper{
+        padding-top: calc(var(--floating-h) + 80px); /* 110 + 80 = 190px */
+      }
+    }
+
+    /* ==================== SCHERM 4 (filters) ====================== */
+    .filters-wrapper{ max-width:1100px; margin:0 auto; display:grid; gap:20px; }
+    .filters-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .layer-hint{ color:var(--muted); font-size:14px; }
+    .filters-section{ display:grid; gap:16px; }
+
+    .group{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+    }
+    .group-header{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:10px;
+    }
+    .group-title{ font-weight:800; }
+    .badges{ display:inline-flex; gap:6px; align-items:center; }
+    .badge{
+      border:1px solid var(--line);
+      padding:2px 6px; border-radius:999px;
+      font-size:11px; color:var(--muted);
+    }
+
+    .field{ display:grid; gap:6px; margin:10px 0; }
+    .field-label{ font-weight:600; }
+    .field-controls{ display:flex; flex-wrap:wrap; gap:8px; }
+
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+    .chip{
+      padding:8px 12px; border-radius:999px;
+      background:#201a6b; border:1px solid var(--line);
+      cursor:pointer;
+    }
+    .chip[aria-pressed="true"]{
+      background:var(--accent); color:var(--accent-ink);
+    }
+    .toggle{ display:flex; gap:8px; align-items:center; }
+    select,input[type="text"],input[type="number"]{
+      background:#201a6b;
+      border:1px solid var(--line);
+      color:#fff;
+      padding:8px 10px; border-radius:8px;
+      min-width: 180px;
+    }
+
+    .is-disabled{ opacity:.55; }
+    .is-disabled *{ pointer-events:none !important; cursor:not-allowed !important; }
+
+    .more-panel{
+      background:var(--panel);
+      border:1px dashed var(--line);
+      padding:12px; border-radius:12px;
+    }
+
+    /* ==================== SCHERM 5 ====================== */
+    .results-wrapper{ max-width:900px; margin:0 auto; display:grid; gap:16px; }
+    .results-summary{
+      background:#201a6b; border:1px solid var(--line);
+      border-radius:10px; padding:12px;
+      white-space:pre-wrap;
+    }
+
+    /* A11y (screen reader only) */
+    .sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
+  </style>
+</head>
 <body>
 
-<!-- ICONEN — standaard verborgen -->
-<div id="header-icons" class="header-icons hidden">
-  <img src="assets/img/header-icon.png" class="icon-left" alt="icon">
-  <img src="assets/img/header-text.png" class="icon-right" alt="text">
+<!-- Zwevende iconen (pas zichtbaar vanaf scherm 3 via .show-icon) -->
+<div class="floating-icon">
+  <img src="assets/img/header-icon.png" alt="Draagkompas icoon">
+</div>
+<div class="floating-text">
+  <img src="assets/img/header-text.png" alt="Draagkompas header tekst">
 </div>
 
-<main>
+<main id="app">
 
-  <!-- SCHERM 1 -->
-  <section id="screen-1" class="screen active">
-    <div class="center">
-      <img src="assets/img/logo.png" class="intro-logo" alt="logo">
-      <button id="go-2" class="btn btn-primary">VERDER</button>
-    </div>
-  </section>
-
-  <!-- SCHERM 2 -->
-  <section id="screen-2" class="screen">
-    <div class="center">
-      <img src="assets/img/draagkompas-disclaimer.png" class="disclaimer" alt="disclaimer">
-      <div class="nav-row">
-        <button id="back-1" class="btn btn-secondary">TERUG</button>
-        <button id="go-3" class="btn btn-primary">VERDER</button>
+  <!-- =================== SCHERM 1 =================== -->
+  <section id="screen-1" class="screen active" aria-label="Intro">
+    <div class="screen1-wrapper">
+      <div class="intro-inner">
+        <img src="assets/img/logo.png" class="intro-logo" alt="Draagkompas logo">
+        <div class="nav-row intro-nav">
+          <button id="btn-back-1" class="btn btn-secondary" aria-hidden="true" tabindex="-1">TERUG</button>
+          <button id="btn-next-1" class="btn btn-primary">VERDER</button>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- SCHERM 3 -->
-  <section id="screen-3" class="screen">
-    <div class="choice-grid">
-
-      <button class="choice-card" id="choose-zoek" data-target="screen-4-zoek">
-        <span class="choice-icon">🔍</span>
-        <span class="choice-title">IK ZOEK</span>
-        <span class="choice-sub">Vind een draagmiddel op maat van jouw baby.</span>
-      </button>
-
-      <button class="choice-card" id="choose-vergelijk" data-target="screen-4-vergelijk">
-        <span class="choice-icon">⚖️</span>
-        <span class="choice-title">IK VERGELIJK</span>
-        <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
-      </button>
-
-    </div>
-
-    <div class="nav-row">
-      <button id="back-2" class="btn btn-secondary">TERUG</button>
+  <!-- =================== SCHERM 2 =================== -->
+  <section id="screen-2" class="screen" aria-label="Disclaimer">
+    <div class="screen2-wrapper">
+      <figure>
+        <img src="assets/img/draagkompas-disclaimer.png" class="screen2-image" alt="Belangrijke informatie en disclaimer">
+      </figure>
+      <div class="nav-row">
+        <button id="btn-back-2" class="btn btn-secondary">TERUG</button>
+        <button id="btn-next-2" class="btn btn-primary">VERDER</button>
+      </div>
     </div>
   </section>
 
-  <!-- SCHERM 4 — ZOEK -->
-  <section id="screen-4-zoek" class="screen">
-    <h2>Zoekmodule</h2>
-    <p>Hier komt jouw zoekmodule.</p>
+  <!-- =================== SCHERM 3 =================== -->
+  <section id="screen-3" class="screen" aria-label="Maak je keuze">
+    <div class="screen3-wrapper">
+      <div class="choice-grid" role="group" aria-label="Kies je pad">
+        <button id="card-zoek" class="choice-card">
+          <span class="choice-icon" aria-hidden="true">🔍</span>
+          <span class="choice-title">IK ZOEK</span>
+          <span class="choice-sub">Vind een draagmiddel op maat van jouw baby.</span>
+        </button>
 
-    <div class="nav-row">
-      <button data-target="screen-3" class="btn btn-secondary go-back">TERUG</button>
+        <button id="card-vergelijk" class="choice-card">
+          <span class="choice-icon" aria-hidden="true">⚖️</span>
+          <span class="choice-title">IK VERGELIJK</span>
+          <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
+        </button>
+      </div>
+
+      <div class="nav-row">
+        <button id="btn-back-3" class="btn btn-secondary">TERUG</button>
+        <button id="btn-next-3" class="btn btn-primary" disabled aria-disabled="true">VERDER</button>
+      </div>
     </div>
   </section>
 
-  <!-- SCHERM 4 — VERGELIJK -->
-  <section id="screen-4-vergelijk" class="screen">
-    <h2>Vergelijkmodule</h2>
-    <p>Hier komt jouw vergelijkmodule.</p>
+  <!-- =================== SCHERM 4A =================== -->
+  <section id="screen-4-zoek" class="screen" aria-label="Filters – Ik zoek">
+    <div class="filters-wrapper">
+      <div class="filters-head">
+        <h2 class="sr-only">Filters – IK ZOEK</h2>
+        <div class="layer-hint">BASIS zichtbaar; UITGEBREID/EXPERT zijn grijs (🔒) en niet aanklikbaar.</div>
+      </div>
 
-    <div class="nav-row">
-      <button data-target="screen-3" class="btn btn-secondary go-back">TERUG</button>
+      <div id="filters-zoek-basic" class="filters-section"></div>
+
+      <div class="filters-more">
+        <button id="toggle-more-zoek" class="btn btn-tertiary" aria-expanded="false" aria-controls="filters-zoek-more">MEER FILTERS</button>
+        <div id="filters-zoek-more" class="more-panel" hidden></div>
+      </div>
+
+      <div class="nav-row">
+        <button id="btn-back-4-zoek" class="btn btn-secondary">TERUG</button>
+        <button id="btn-next-4-zoek" class="btn btn-primary">VERDER</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SCHERM 4B =================== -->
+  <section id="screen-4-vergelijk" class="screen" aria-label="Filters – Ik vergelijk">
+    <div class="filters-wrapper">
+      <div class="filters-head">
+        <h2 class="sr-only">Filters – IK VERGELIJK</h2>
+        <div class="layer-hint">BASIS + UITGEBREID actief; EXPERT is grijs (🔒) en niet aanklikbaar.</div>
+      </div>
+
+      <div id="filters-vergelijk-basic" class="filters-section"></div>
+
+      <div class="filters-more">
+        <button id="toggle-more-vergelijk" class="btn btn-tertiary" aria-expanded="false" aria-controls="filters-vergelijk-more">MEER FILTERS</button>
+        <div id="filters-vergelijk-more" class="more-panel" hidden></div>
+      </div>
+
+      <div class="nav-row">
+        <button id="btn-back-4-vergelijk" class="btn btn-secondary">TERUG</button>
+        <button id="btn-next-4-vergelijk" class="btn btn-primary">VERDER</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SCHERM 5 =================== -->
+  <section id="screen-5-results" class="screen" aria-label="Resultaten">
+    <div class="results-wrapper">
+      <h2>RESULTATEN</h2>
+      <pre id="selected-filters" class="results-summary" aria-live="polite">Nog geen filters geselecteerd.</pre>
+      <div class="nav-row">
+        <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
+        <button id="btn-next-5" class="btn btn-primary" disabled aria-disabled="true">VERDER</button>
+      </div>
     </div>
   </section>
 
 </main>
 
 <script>
-function show(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+/* ========= 0) Jouw Google Sheet ID ========= */
+const GOOGLE_SHEET_ID = '16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto';
+/* Tabbladen moeten heten: 'groups' en 'fields' */
 
-  const header = document.getElementById("header-icons");
-
-  // iconen enkel vanaf scherm 3
-  if (id === "screen-3" || id === "screen-4-zoek" || id === "screen-4-vergelijk") {
-    header.classList.remove("hidden");
-  } else {
-    header.classList.add("hidden");
-  }
+/* ========= 1) Helpers om Google gviz JSON te laden ========= */
+async function fetchGVizJSON(sheetName){
+  const base = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq`;
+  const url  = `${base}?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=&_=${Date.now()}`; // cache-buster
+  const resp = await fetch(url);
+  if(!resp.ok) throw new Error(`Laden mislukt voor sheet '${sheetName}' (${resp.status})`);
+  const text = await resp.text();
+  const match = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+  if(!match) throw new Error('Onverwacht gviz-formaat');
+  const data = JSON.parse(match[1]);
+  const rows = (data.table.rows || []).map(r => (r.c||[]).map(c => (c? c.v : '')));
+  const headers = (data.table.cols || []).map(c => c.label || c.id || '');
+  return { headers, rows };
 }
 
-// Navigatie scherm 1 -> 2
-document.getElementById("go-2").onclick = () => show("screen-2");
-document.getElementById("back-1").onclick = () => show("screen-1");
+/* ========= 2) Mapping: rows → FILTERS.groups / FILTERS.fields ========= */
+function makeGroups(g){
+  // headers: id,label,order
+  const idx = Object.fromEntries(g.headers.map((h,i)=>[String(h).toLowerCase(), i]));
+  const rows = g.rows
+    .map(r => ({
+      id: String(r[idx.id] ?? '').trim(),
+      label: String(r[idx.label] ?? '').trim(),
+      order: Number(r[idx.order] ?? 0) || 0
+    }))
+    .filter(x => x.id && x.label)
+    .sort((a,b)=> a.order - b.order);
+  return rows;
+}
 
-// Scherm 2 -> 3
-document.getElementById("go-3").onclick = () => show("screen-3");
-document.getElementById("back-2").onclick = () => show("screen-2");
+function makeFields(f){
+  // headers: id,label,group,layer,type,options,tooltip,order
+  const idx = Object.fromEntries(f.headers.map((h,i)=>[String(h).toLowerCase(), i]));
+  const rows = f.rows
+    .map(r => {
+      const rawOptions = String(r[idx.options] ?? '').trim();
+      return {
+        id:        String(r[idx.id] ?? '').trim(),
+        label:     String(r[idx.label] ?? '').trim(),
+        group:     String(r[idx.group] ?? '').trim(),
+        layer:     String(r[idx.layer] ?? '').trim().toLowerCase(),
+        type:      String(r[idx.type] ?? '').trim().toLowerCase(),
+        options:   rawOptions ? rawOptions.split('|').map(s=>s.trim()).filter(Boolean) : [],
+        tooltip:   String(r[idx.tooltip] ?? '').trim(),
+        order:     Number(r[idx.order] ?? 0) || 0
+      };
+    })
+    .filter(x => x.id && x.label && x.group && x.layer && x.type)
+    .sort((a,b)=> a.order - b.order);
+  return rows;
+}
 
-// Scherm 3 klikken op keuze → direct naar doel-scherm
-document.getElementById("choose-zoek").onclick = () => show("screen-4-zoek");
-document.getElementById("choose-vergelijk").onclick = () => show("screen-4-vergelijk");
+/* ========= 3) UI helpers ========= */
+const SCREENS=["screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results"];
+let lastChoice=null;
+let FILTERS={ groups:[], fields:[] };
 
-// terug van scherm 4 naar scherm 3
-document.querySelectorAll(".go-back").forEach(btn => {
-  btn.onclick = () => show(btn.dataset.target);
+function goTo(id){
+  SCREENS.forEach(s=>{
+    const el=document.getElementById(s);
+    el.classList.toggle("active",s===id);
+  });
+  updateIcon();
+  updateNav();
+}
+
+function updateIcon(){
+  const visibleIndex=SCREENS.findIndex(id=>document.getElementById(id).classList.contains("active"));
+  if(visibleIndex>=2) document.body.classList.add("show-icon");
+  else document.body.classList.remove("show-icon");
+}
+
+function updateNav(){
+  const next3=document.getElementById("btn-next-3");
+  if(next3){ next3.disabled=!lastChoice; next3.setAttribute("aria-disabled", String(!lastChoice)); }
+}
+
+function layerActive(layer,path){
+  if(layer==="basis") return true;
+  if(layer==="uitgebreid") return path==="vergelijk"; // UITGEBREID actief in IK VERGELIJK
+  if(layer==="expert") return false;                   // EXPERT voorlopig grijs
+  return false;
+}
+
+/* Velden renderen */
+function createField(f,path){
+  const active=layerActive(f.layer,path);
+  const wrap=document.createElement("div");
+  wrap.className="field"+(active?"":" is-disabled");
+
+  const head=document.createElement("div");
+  head.style.display="flex"; head.style.justifyContent="space-between"; head.style.alignItems="center";
+  head.innerHTML=`
+    <div class="field-label">${f.label}</div>
+    <div class="badges">
+      <span class="badge">${f.layer.toUpperCase()}</span>
+      ${active ? "" : `<span style="display:inline-flex;gap:4px;">🔒 <span>${f.tooltip || `Beschikbaar in ${f.layer.toUpperCase()}`}</span></span>`}
+    </div>`;
+  wrap.appendChild(head);
+
+  const controls=document.createElement("div");
+  controls.className="field-controls";
+  const disable = el => { if(!active){ el.disabled=true; el.setAttribute("aria-disabled","true"); } };
+
+  switch(f.type){
+    case "chips":{
+      const box=document.createElement("div"); box.className="chips";
+      (f.options||[]).forEach(opt=>{
+        const chip=document.createElement("button");
+        chip.type="button"; chip.className="chip"; chip.textContent=opt; chip.setAttribute("aria-pressed","false");
+        if(active){
+          chip.addEventListener("click",()=>{
+            const p=chip.getAttribute("aria-pressed")==="true";
+            chip.setAttribute("aria-pressed", String(!p));
+          });
+        } else { disable(chip); }
+        box.appendChild(chip);
+      });
+      controls.appendChild(box);
+      break;
+    }
+    case "checkbox":{
+      (f.options||[]).forEach(opt=>{
+        const lab=document.createElement("label"); lab.className="toggle";
+        const inp=document.createElement("input"); inp.type="checkbox"; disable(inp);
+        const sp=document.createElement("span"); sp.textContent=opt;
+        lab.append(inp,sp); controls.appendChild(lab);
+      });
+      break;
+    }
+    case "toggle":{
+      const lab=document.createElement("label"); lab.className="toggle";
+      const inp=document.createElement("input"); inp.type="checkbox"; disable(inp);
+      const sp=document.createElement("span"); sp.textContent="JA/NEE";
+      lab.append(inp,sp); controls.appendChild(lab);
+      break;
+    }
+    case "select":{
+      const sel=document.createElement("select");
+      (f.options||[]).forEach(opt=>{
+        const o=document.createElement("option"); o.value=opt; o.textContent=opt; sel.appendChild(o);
+      });
+      disable(sel); controls.appendChild(sel);
+      break;
+    }
+    case "number":{
+      const inp=document.createElement("input"); inp.type="number"; inp.placeholder="0"; disable(inp);
+      controls.appendChild(inp); break;
+    }
+    case "text":
+    default:{
+      const inp=document.createElement("input"); inp.type="text"; inp.placeholder="—"; disable(inp);
+      controls.appendChild(inp); break;
+    }
+  }
+
+  wrap.appendChild(controls);
+  return wrap;
+}
+
+function renderFilters(path){
+  const basic=document.getElementById(`filters-${path}-basic`);
+  const more =document.getElementById(`filters-${path}-more`);
+  if(!basic || !more) return;
+  basic.innerHTML=""; more.innerHTML="";
+
+  // Per groep: BASIS omhoog, rest bij "Meer filters"
+  FILTERS.groups.forEach(g=>{
+    const fields=FILTERS.fields.filter(f=>f.group===g.id);
+    const basics=fields.filter(f=>f.layer==="basis");
+    const others=fields.filter(f=>f.layer!=="basis");
+
+    if(basics.length){
+      const sec=document.createElement("section"); sec.className="group";
+      sec.innerHTML=`<div class="group-header">
+        <div class="group-title">${g.label}</div>
+        <div class="badges"><span class="badge">BASIS</span></div>
+      </div>`;
+      basics.forEach(f=>sec.appendChild(createField(f,path)));
+      basic.appendChild(sec);
+    }
+
+    if(others.length){
+      const sec=document.createElement("section"); sec.className="group";
+      const hasU=others.some(f=>f.layer==="uitgebreid");
+      const hasE=others.some(f=>f.layer==="expert");
+      sec.innerHTML=`<div class="group-header">
+        <div class="group-title">${g.label}</div>
+        <div class="badges">
+          ${hasU?'<span class="badge">UITGEBREID</span>':''}
+          ${hasE?'<span class="badge">EXPERT</span>':''}
+        </div>
+      </div>`;
+      others.forEach(f=>sec.appendChild(createField(f,path)));
+      more.appendChild(sec);
+    }
+  });
+}
+
+/* ========= 4) Init ========= */
+document.addEventListener("DOMContentLoaded", async ()=>{
+  // Navigatie events
+  document.getElementById("btn-next-1").onclick=()=>goTo("screen-2");
+  document.getElementById("btn-back-2").onclick=()=>goTo("screen-1");
+  document.getElementById("btn-next-2").onclick=()=>goTo("screen-3");
+
+  document.getElementById("btn-back-3").onclick=()=>goTo("screen-2");
+  document.getElementById("card-zoek").onclick=()=>{ lastChoice="zoek"; updateNav(); renderFilters("zoek"); goTo("screen-4-zoek"); };
+  document.getElementById("card-vergelijk").onclick=()=>{ lastChoice="vergelijk"; updateNav(); renderFilters("vergelijk"); goTo("screen-4-vergelijk"); };
+  document.getElementById("btn-next-3").onclick=()=>{
+    if(lastChoice==="zoek") goTo("screen-4-zoek");
+    if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
+  };
+
+  document.getElementById("toggle-more-zoek").onclick=e=>{
+    const p=document.getElementById("filters-zoek-more");
+    const exp=e.currentTarget.getAttribute("aria-expanded")==="true";
+    p.hidden=exp; e.currentTarget.setAttribute("aria-expanded", String(!exp));
+  };
+  document.getElementById("toggle-more-vergelijk").onclick=e=>{
+    const p=document.getElementById("filters-vergelijk-more");
+    const exp=e.currentTarget.getAttribute("aria-expanded")==="true";
+    p.hidden=exp; e.currentTarget.setAttribute("aria-expanded", String(!exp));
+  };
+
+  document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
+  document.getElementById("btn-next-4-zoek").onclick=()=>{
+    document.getElementById("selected-filters").textContent="Gekozen pad: IK ZOEK";
+    goTo("screen-5-results");
+  };
+
+  document.getElementById("btn-back-4-vergelijk").onclick=()=>goTo("screen-3");
+  document.getElementById("btn-next-4-vergelijk").onclick=()=>{
+    document.getElementById("selected-filters").textContent="Gekozen pad: IK VERGELIJK";
+    goTo("screen-5-results");
+  };
+
+  // 1) laad beide tabbladen uit jouw Google Sheet
+  try{
+    const [g,f] = await Promise.all([ fetchGVizJSON('groups'), fetchGVizJSON('fields') ]);
+    FILTERS = { groups: makeGroups(g), fields: makeFields(f) };
+  }catch(err){
+    console.error('Kon Google Sheet niet laden:', err);
+    FILTERS = { groups:[], fields:[] }; // val terug zodat de app niet crasht
+  }
+
+  updateIcon();
+  updateNav();
 });
 </script>
 
