@@ -19,17 +19,16 @@
     }
 
     :root{
-      --bg:#0f0b3a;
-      --card:#15104a;
-      --ink:#fff;
+      --floating-h:110px;
+      --line:rgba(255,255,255,0.15);
       --muted:#cfd3ff;
+      --card:#15104a;
+      --panel:#1b165c;
       --accent:#ff7a59;
       --accent-ink:#1a1446;
-      --line:rgba(255,255,255,0.15);
-      --panel:#1b165c;
-      --floating-h:110px;
     }
 
+    /* ICONEN */
     .floating-icon,
     .floating-text{
       position:absolute;
@@ -41,7 +40,9 @@
     .floating-text{ right:20px; }
 
     body.show-icon .floating-icon,
-    body.show-icon .floating-text{ display:block; }
+    body.show-icon .floating-text{
+      display:block;
+    }
 
     .floating-icon img,
     .floating-text img{
@@ -50,6 +51,7 @@
       display:block;
     }
 
+    /* SCHERMEN */
     .screen{
       display:none;
       min-height:100svh;
@@ -57,6 +59,7 @@
     }
     .screen.active{ display:block; }
 
+    /* Vanaf scherm 3 ruimte bovenaan */
     #screen-3,
     #screen-4-zoek,
     #screen-4-vergelijk,
@@ -72,8 +75,10 @@
       }
     }
 
+    /* Buttons */
     .nav-row{
-      display:flex; gap:12px; justify-content:space-between; margin-top:12px;
+      display:flex; gap:12px; justify-content:space-between;
+      margin-top:12px;
     }
     .btn{
       border:none; padding:14px 22px; border-radius:12px;
@@ -83,18 +88,19 @@
     .btn-secondary{ background:#2a246f; color:#fff; }
     .btn[disabled]{ opacity:.5; cursor:not-allowed; }
 
+    /* SCHERM 1 */
     #btn-back-1{ display:none!important; }
-
     .screen1-wrapper{
-      display:grid; 
-      place-items:center;
+      display:grid; place-items:center;
       min-height:100svh;
     }
     .intro-inner{
-      display:grid; gap:24px; justify-items:center; max-width:1100px;
+      display:grid; gap:24px; justify-items:center;
+      max-width:1100px;
     }
     .intro-logo{ width:min(95%,1100px); height:auto; }
 
+    /* SCHERM 2 */
     .screen2-wrapper{
       max-width:1100px; margin:0 auto;
       display:grid; gap:20px;
@@ -105,15 +111,18 @@
       box-shadow:0 8px 28px rgba(0,0,0,.35);
     }
 
+    /* SCHERM 3 */
     .screen3-wrapper{
       max-width:1100px; margin:0 auto;
       display:grid; gap:28px;
     }
     .choice-grid{
-      display:grid; gap:20px; grid-template-columns:repeat(2,1fr);
+      display:grid; gap:20px;
+      grid-template-columns:repeat(2,1fr);
     }
-    @media(max-width:700px){ .choice-grid{ grid-template-columns:1fr; } }
-
+    @media(max-width:700px){
+      .choice-grid{ grid-template-columns:1fr; }
+    }
     .choice-card{
       background:var(--card);
       border:1px solid var(--line);
@@ -122,15 +131,15 @@
       display:grid; gap:18px;
       cursor:pointer;
     }
-
     .choice-icon{ font-size:40px; }
     .choice-title{
-      font-size:28px; font-weight:800;
-      color:white;
-      letter-spacing:.06em;
+      font-size:28px;
+      font-weight:800;
+      color:#fff;
     }
     .choice-sub{ color:var(--muted); }
 
+    /* SCHERM 4 */
     .filters-wrapper{
       max-width:1100px; margin:0 auto;
       display:grid; gap:20px;
@@ -144,10 +153,10 @@
       padding:14px;
     }
     .group-header{
-      display:flex; justify-content:space-between; margin-bottom:10px;
+      display:flex; justify-content:space-between;
+      margin-bottom:10px;
     }
     .group-title{ font-weight:800; }
-
     .badge{
       border:1px solid var(--line);
       padding:2px 6px;
@@ -156,19 +165,7 @@
       color:var(--muted);
     }
 
-    .field{ display:grid; gap:6px; margin:10px 0; }
-    .field-label{ font-weight:600; }
-    .field-controls{ display:flex; flex-wrap:wrap; gap:8px; }
-
-    select,input[type="text"],input[type="number"]{
-      background:#201a6b;
-      border:1px solid var(--line);
-      color:#fff;
-      padding:8px 10px;
-      border-radius:8px;
-      min-width:180px;
-    }
-
+    /* SCHERM 5 */
     .results-wrapper{
       max-width:900px; margin:0 auto;
       display:grid; gap:16px;
@@ -179,14 +176,15 @@
       border-radius:10px;
       padding:12px;
     }
-
   </style>
 </head>
+
 
 <body>
 
 <main id="app">
 
+  <!-- ICONEN -->
   <div class="floating-icon">
     assets/img/header-icon.png
   </div>
@@ -195,6 +193,7 @@
     assets/img/header-text.png
   </div>
 
+  <!-- SCHERM 1 -->
   <section id="screen-1" class="screen active">
     <div class="screen1-wrapper">
       <div class="intro-inner">
@@ -207,6 +206,7 @@
     </div>
   </section>
 
+  <!-- SCHERM 2 -->
   <section id="screen-2" class="screen">
     <div class="screen2-wrapper">
       <figure>
@@ -219,10 +219,12 @@
     </div>
   </section>
 
+  <!-- SCHERM 3 -->
   <section id="screen-3" class="screen">
     <div class="screen3-wrapper">
 
       <div class="choice-grid">
+
         <button id="card-zoek" class="choice-card">
           <span class="choice-icon">🔍</span>
           <span class="choice-title">IK ZOEK</span>
@@ -234,6 +236,7 @@
           <span class="choice-title">IK VERGELIJK</span>
           <span class="choice-sub">Filter op kenmerken en vergelijk dragers.</span>
         </button>
+
       </div>
 
       <div class="nav-row">
@@ -244,11 +247,11 @@
     </div>
   </section>
 
+  <!-- SCHERM 4A -->
   <section id="screen-4-zoek" class="screen">
     <div class="filters-wrapper">
-      <div class="filters-head">
-        BASIС zichtbaar; UITGEBREID/EXPERT grijs
-      </div>
+
+      <div class="filters-head">BASIS zichtbaar; UITGEBREID/EXPERT grijs</div>
 
       <div id="filters-zoek-basic" class="filters-section"></div>
 
@@ -261,15 +264,15 @@
         <button id="btn-back-4-zoek" class="btn btn-secondary">TERUG</button>
         <button id="btn-next-4-zoek" class="btn btn-primary">VERDER</button>
       </div>
+
     </div>
   </section>
 
+  <!-- SCHERM 4B -->
   <section id="screen-4-vergelijk" class="screen">
     <div class="filters-wrapper">
 
-      <div class="filters-head">
-        BASIS + UITGEBREID actief; EXPERT grijs
-      </div>
+      <div class="filters-head">BASIS + UITGEBREID actief; EXPERT grijs</div>
 
       <div id="filters-vergelijk-basic" class="filters-section"></div>
 
@@ -286,13 +289,12 @@
     </div>
   </section>
 
+  <!-- SCHERM 5 -->
   <section id="screen-5-results" class="screen">
     <div class="results-wrapper">
 
       <h2>RESULTATEN</h2>
-      <pre id="selected-filters" class="results-summary">
-Nog geen filters geselecteerd.
-      </pre>
+      <pre id="selected-filters" class="results-summary">Nog geen filters geselecteerd.</pre>
 
       <div class="nav-row">
         <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
@@ -304,27 +306,29 @@ Nog geen filters geselecteerd.
 
 </main>
 
+
 <script>
-const GOOGLE_SHEET_ID = "16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto";
+const GOOGLE_SHEET_ID="16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto";
 
 async function fetchGVizJSON(sheet){
   const url=`https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${sheet}&_=${Date.now()}`;
-  const r=await fetch(url);
-  const t=await r.text();
-  const m=t.match(/setResponse\(([\s\S]*?)\);/);
-  const j=JSON.parse(m[1]);
-  const headers=j.table.cols.map(c=>c.label);
+  const r=await fetch(url); const t=await r.text();
+  const m=t.match(/setResponse\(([\s\S]*?)\);/); const j=JSON.parse(m[1]);
+  const h=j.table.cols.map(c=>c.label);
   const rows=j.table.rows.map(r=>r.c.map(c=>c?c.v:""));
-  return {headers,rows};
+  return {headers:h, rows};
 }
 
-function idx(hdr){ return Object.fromEntries(hdr.map((h,i)=>[h.toLowerCase(),i])); }
+function mapIndex(h){ return Object.fromEntries(h.map((x,i)=>[x.toLowerCase(),i])); }
+
 function mapGroups(s){
-  const i=idx(s.headers);
-  return s.rows.map(r=>({id:r[i.id],label:r[i.label],order:+r[i.order]})).sort((a,b)=>a.order-b.order);
+  const i=mapIndex(s.headers);
+  return s.rows.map(r=>({id:r[i.id],label:r[i.label],order:+r[i.order]}))
+               .sort((a,b)=>a.order-b.order);
 }
+
 function mapFields(s){
-  const i=idx(s.headers);
+  const i=mapIndex(s.headers);
   return s.rows.map(r=>({
     id:r[i.id], label:r[i.label], group:r[i.group],
     layer:r[i.layer], type:r[i.type],
@@ -334,130 +338,130 @@ function mapFields(s){
   })).sort((a,b)=>a.order-b.order);
 }
 
-const SCREENS=[ "screen-1","screen-2","screen-3","screen-4-zoek","screen-4-vergelijk","screen-5-results" ];
+const SCREENS=[
+  "screen-1","screen-2","screen-3",
+  "screen-4-zoek","screen-4-vergelijk",
+  "screen-5-results"
+];
 let lastChoice=null;
 let FILTERS={groups:[],fields:[]};
 
 function goTo(id){
   SCREENS.forEach(s=>document.getElementById(s).classList.toggle("active",s===id));
-  updateIcon();
+  updateIcons();
   updateNav();
 }
-function updateIcon(){
-  const active=SCREENS.findIndex(s=>document.getElementById(s).classList.contains("active"));
-  if(active>=2) document.body.classList.add("show-icon");
+
+function updateIcons(){
+  const i=SCREENS.findIndex(s=>document.getElementById(s).classList.contains("active"));
+  if(i>=2) document.body.classList.add("show-icon");
   else document.body.classList.remove("show-icon");
 }
+
 function updateNav(){
   const b=document.getElementById("btn-next-3");
   if(b) b.disabled=!lastChoice;
 }
 
-function layerOK(l,p){ return l==="basis"|| (l==="uitgebreid" && p==="vergelijk"); }
+function layerOK(l,p){ return l==="basis" || (l==="uitgebreid" && p==="vergelijk"); }
 
-function fieldHTML(f,path){
+function createField(f,path){
   const ok=layerOK(f.layer,path);
-  const w=document.createElement("div");
-  w.className="field"+(ok?"":" is-disabled");
+  const wrap=document.createElement("div");
+  wrap.className="field"+(ok?"":" is-disabled");
 
-  const L=document.createElement("div");
-  L.className="field-label";
-  L.textContent=f.label;
-  w.appendChild(L);
+  const lbl=document.createElement("div");
+  lbl.className="field-label";
+  lbl.textContent=f.label;
+  wrap.appendChild(lbl);
 
-  const c=document.createElement("div");
-  c.className="field-controls";
+  const ctr=document.createElement("div");
+  ctr.className="field-controls";
 
-  function dis(el){ if(!ok) el.disabled=true; }
+  function dis(e){ if(!ok) e.disabled=true; }
 
   if(f.type==="chips"){
     const box=document.createElement("div"); box.className="chips";
     f.options.forEach(o=>{
       const b=document.createElement("button");
-      b.className="chip"; b.type="button";
-      b.textContent=o; b.setAttribute("aria-pressed","false");
+      b.className="chip"; b.textContent=o; b.type="button";
+      b.setAttribute("aria-pressed","false");
       if(ok){
-        b.onclick=()=>{
-          const val=b.getAttribute("aria-pressed")==="true";
-          b.setAttribute("aria-pressed",String(!val));
-        };
+        b.onclick=()=>b.setAttribute("aria-pressed",
+          b.getAttribute("aria-pressed")==="true"?"false":"true");
       }
       box.appendChild(b);
     });
-    c.appendChild(box);
+    ctr.appendChild(box);
   }
+
   else if(f.type==="select"){
     const s=document.createElement("select");
     f.options.forEach(o=>{
-      const opt=document.createElement("option");
-      opt.value=o; opt.textContent=o;
-      s.appendChild(opt);
+      const op=document.createElement("option");
+      op.value=o; op.textContent=o; s.appendChild(op);
     });
-    dis(s); c.appendChild(s);
-  }
-  else if(f.type==="toggle"){
-    const lab=document.createElement("label");
-    const inp=document.createElement("input");
-    inp.type="checkbox";
-    dis(inp);
-    lab.appendChild(inp);
-    lab.append(" JA/NEE");
-    c.appendChild(lab);
-  }
-  else if(f.type==="number"){
-    const inp=document.createElement("input");
-    inp.type="number";
-    dis(inp);
-    c.appendChild(inp);
-  }
-  else {
-    const inp=document.createElement("input");
-    inp.type="text";
-    dis(inp);
-    c.appendChild(inp);
+    dis(s); ctr.appendChild(s);
   }
 
-  w.appendChild(c);
-  return w;
+  else if(f.type==="toggle"){
+    const lb=document.createElement("label");
+    const i=document.createElement("input");
+    i.type="checkbox"; dis(i);
+    lb.appendChild(i); lb.append(" JA/NEE");
+    ctr.appendChild(lb);
+  }
+
+  else if(f.type==="number"){
+    const i=document.createElement("input");
+    i.type="number"; dis(i); ctr.appendChild(i);
+  }
+
+  else{
+    const i=document.createElement("input");
+    i.type="text"; dis(i); ctr.appendChild(i);
+  }
+
+  wrap.appendChild(ctr);
+  return wrap;
 }
 
 function renderFilters(path){
-  const b=document.getElementById(`filters-${path}-basic`);
-  const m=document.getElementById(`filters-${path}-more`);
-  b.innerHTML=""; m.innerHTML="";
+  const basic=document.getElementById(`filters-${path}-basic`);
+  const more=document.getElementById(`filters-${path}-more`);
+  basic.innerHTML=""; more.innerHTML="";
 
   FILTERS.groups.forEach(g=>{
-    const f=FILTERS.fields.filter(x=>x.group===g.id);
-    const fb=f.filter(x=>x.layer==="basis");
-    const fo=f.filter(x=>x.layer!=="basis");
+    const fs=FILTERS.fields.filter(f=>f.group===g.id);
+    const fb=fs.filter(f=>f.layer==="basis");
+    const fo=fs.filter(f=>f.layer!=="basis");
 
     if(fb.length){
       const sec=document.createElement("section");
       sec.className="group";
       sec.innerHTML=`<div class="group-header">
         <div class="group-title">${g.label}</div>
-        <div class="badges"><span class="badge">BASIS</span></div>
-      </div>`;
-      fb.forEach(x=>sec.appendChild(fieldHTML(x,path)));
-      b.appendChild(sec);
+        <div class="badge">BASIS</div></div>`;
+      fb.forEach(f=>sec.appendChild(createField(f,path)));
+      basic.appendChild(sec);
     }
 
     if(fo.length){
       const sec=document.createElement("section");
       sec.className="group";
-      const hasU=fo.some(x=>x.layer==="uitgebreid");
-      const hasE=fo.some(x=>x.layer==="expert");
+
+      const hasU=fo.some(f=>f.layer==="uitgebreid");
+      const hasE=fo.some(f=>f.layer==="expert");
 
       sec.innerHTML=`<div class="group-header">
         <div class="group-title">${g.label}</div>
         <div class="badges">
           ${hasU?'<span class="badge">UITGEBREID</span>':''}
           ${hasE?'<span class="badge">EXPERT</span>':''}
-        </div>
-      </div>`;
+        </div></div>`;
 
-      fo.forEach(x=>sec.appendChild(fieldHTML(x,path)));
-      m.appendChild(sec);
+      fo.forEach(f=>sec.appendChild(createField(f,path)));
+      more.appendChild(sec);
     }
   });
 }
@@ -471,36 +475,30 @@ document.addEventListener("DOMContentLoaded", async()=>{
   document.getElementById("btn-back-3").onclick=()=>goTo("screen-2");
 
   document.getElementById("card-zoek").onclick=()=>{
-    lastChoice="zoek";
-    updateNav();
-    renderFilters("zoek");
-    goTo("screen-4-zoek");
+    lastChoice="zoek"; updateNav(); renderFilters("zoek"); goTo("screen-4-zoek");
   };
 
   document.getElementById("card-vergelijk").onclick=()=>{
-    lastChoice="vergelijk";
-    updateNav();
-    renderFilters("vergelijk");
-    goTo("screen-4-vergelijk");
+    lastChoice="vergelijk"; updateNav(); renderFilters("vergelijk"); goTo("screen-4-vergelijk");
   };
 
   document.getElementById("btn-next-3").onclick=()=>{
     if(lastChoice==="zoek") goTo("screen-4-zoek");
-    if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
+    else goTo("screen-4-vergelijk");
   };
 
   document.getElementById("toggle-more-zoek").onclick=e=>{
     const tg=document.getElementById("filters-zoek-more");
-    const ex=e.target.getAttribute("aria-expanded")==="true";
-    tg.hidden=ex;
-    e.target.setAttribute("aria-expanded",String(!ex));
+    tg.hidden=e.target.getAttribute("aria-expanded")==="true";
+    e.target.setAttribute("aria-expanded",
+      tg.hidden?"false":"true");
   };
 
   document.getElementById("toggle-more-vergelijk").onclick=e=>{
     const tg=document.getElementById("filters-vergelijk-more");
-    const ex=e.target.getAttribute("aria-expanded")==="true";
-    tg.hidden=ex;
-    e.target.setAttribute("aria-expanded",String(!ex));
+    tg.hidden=e.target.getAttribute("aria-expanded")==="true";
+    e.target.setAttribute("aria-expanded",
+      tg.hidden?"false":"true");
   };
 
   document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
@@ -528,10 +526,9 @@ document.addEventListener("DOMContentLoaded", async()=>{
     ]);
     FILTERS.groups=mapGroups(g);
     FILTERS.fields=mapFields(f);
-
   }catch(e){ console.error(e); }
 
-  updateIcon();
+  updateIcons();
   updateNav();
 });
 </script>
