@@ -249,8 +249,11 @@
 </main>
 
 <script>
+
 function show(id){
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(
+    s => s.classList.remove("active")
+  );
   document.getElementById(id).classList.add("active");
   document.body.classList.toggle("show-icon", id !== "screen-1" && id !== "screen-2");
 }
@@ -259,6 +262,7 @@ document.getElementById("btn-next-1").onclick = () => show("screen-2");
 document.getElementById("btn-back-2").onclick = () => show("screen-1");
 document.getElementById("btn-next-2").onclick = () => show("screen-3");
 document.getElementById("btn-back-3").onclick = () => show("screen-2");
+
 </script>
 
 </body>
