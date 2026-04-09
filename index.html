@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
 
+  <!-- Google font -->
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
     *{ box-sizing:border-box; }
@@ -28,7 +29,7 @@
       --accent-ink:#1a1446;
     }
 
-    /* ICONEN */
+    /* ICONEN: absolute + meescrollend vanaf scherm 3 */
     .floating-icon,
     .floating-text{
       position:absolute;
@@ -40,9 +41,7 @@
     .floating-text{ right:20px; }
 
     body.show-icon .floating-icon,
-    body.show-icon .floating-text{
-      display:block;
-    }
+    body.show-icon .floating-text{ display:block; }
 
     .floating-icon img,
     .floating-text img{
@@ -51,7 +50,7 @@
       display:block;
     }
 
-    /* SCHERMEN */
+    /* SCHERM STRUCTUUR */
     .screen{
       display:none;
       min-height:100svh;
@@ -59,7 +58,7 @@
     }
     .screen.active{ display:block; }
 
-    /* Vanaf scherm 3 ruimte bovenaan */
+    /* VANAF SCHERM 3 EXTRA RUIMTE */
     #screen-3,
     #screen-4-zoek,
     #screen-4-vergelijk,
@@ -75,14 +74,14 @@
       }
     }
 
-    /* Buttons */
+    /* BUTTONS */
     .nav-row{
       display:flex; gap:12px; justify-content:space-between;
       margin-top:12px;
     }
     .btn{
       border:none; padding:14px 22px; border-radius:12px;
-      font-weight:800; cursor:pointer; font-family:inherit;
+      font-weight:800; cursor:pointer;
     }
     .btn-primary{ background:var(--accent); color:var(--accent-ink); }
     .btn-secondary{ background:#2a246f; color:#fff; }
@@ -98,7 +97,11 @@
       display:grid; gap:24px; justify-items:center;
       max-width:1100px;
     }
-    .intro-logo{ width:min(95%,1100px); height:auto; }
+    .intro-logo{
+      width:min(95%,1100px);
+      height:auto;
+      display:block;
+    }
 
     /* SCHERM 2 */
     .screen2-wrapper{
@@ -109,6 +112,7 @@
       width:100%;
       border-radius:12px;
       box-shadow:0 8px 28px rgba(0,0,0,.35);
+      display:block;
     }
 
     /* SCHERM 3 */
@@ -145,17 +149,16 @@
       display:grid; gap:20px;
     }
     .filters-section{ display:grid; gap:16px; }
-
     .group{
       background:var(--card);
       border:1px solid var(--line);
-      border-radius:14px;
-      padding:14px;
+      border-radius:14px; padding:14px;
     }
     .group-header{
       display:flex; justify-content:space-between;
       margin-bottom:10px;
     }
+
     .group-title{ font-weight:800; }
     .badge{
       border:1px solid var(--line);
@@ -178,7 +181,6 @@
     }
   </style>
 </head>
-
 
 <body>
 
@@ -306,7 +308,6 @@
 
 </main>
 
-
 <script>
 const GOOGLE_SHEET_ID="16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto";
 
@@ -319,22 +320,18 @@ async function fetchGVizJSON(sheet){
   return {headers:h, rows};
 }
 
-function mapIndex(h){ return Object.fromEntries(h.map((x,i)=>[x.toLowerCase(),i])); }
-
+function idx(h){ return Object.fromEntries(h.map((x,i)=>[x.toLowerCase(),i])); }
 function mapGroups(s){
-  const i=mapIndex(s.headers);
-  return s.rows.map(r=>({id:r[i.id],label:r[i.label],order:+r[i.order]}))
-               .sort((a,b)=>a.order-b.order);
+  const i=idx(s.headers);
+  return s.rows.map(r=>({id:r[i.id],label:r[i.label],order:+r[i.order]})).sort((a,b)=>a.order-b.order);
 }
-
 function mapFields(s){
-  const i=mapIndex(s.headers);
+  const i=idx(s.headers);
   return s.rows.map(r=>({
-    id:r[i.id], label:r[i.label], group:r[i.group],
-    layer:r[i.layer], type:r[i.type],
+    id:r[i.id],label:r[i.label],group:r[i.group],
+    layer:r[i.layer],type:r[i.type],
     options:(r[i.options]||"").split("|").map(s=>s.trim()).filter(Boolean),
-    tooltip:r[i.tooltip]||"",
-    order:+r[i.order]
+    tooltip:r[i.tooltip]||"",order:+r[i.order]
   })).sort((a,b)=>a.order-b.order);
 }
 
@@ -384,11 +381,13 @@ function createField(f,path){
     const box=document.createElement("div"); box.className="chips";
     f.options.forEach(o=>{
       const b=document.createElement("button");
-      b.className="chip"; b.textContent=o; b.type="button";
-      b.setAttribute("aria-pressed","false");
+      b.className="chip"; b.type="button";
+      b.textContent=o; b.setAttribute("aria-pressed","false");
       if(ok){
-        b.onclick=()=>b.setAttribute("aria-pressed",
-          b.getAttribute("aria-pressed")==="true"?"false":"true");
+        b.onclick=()=>{
+          const v=b.getAttribute("aria-pressed")==="true";
+          b.setAttribute("aria-pressed",String(!v));
+        };
       }
       box.appendChild(b);
     });
@@ -399,7 +398,8 @@ function createField(f,path){
     const s=document.createElement("select");
     f.options.forEach(o=>{
       const op=document.createElement("option");
-      op.value=o; op.textContent=o; s.appendChild(op);
+      op.value=o; op.textContent=o;
+      s.appendChild(op);
     });
     dis(s); ctr.appendChild(s);
   }
@@ -414,12 +414,14 @@ function createField(f,path){
 
   else if(f.type==="number"){
     const i=document.createElement("input");
-    i.type="number"; dis(i); ctr.appendChild(i);
+    i.type="number"; dis(i);
+    ctr.appendChild(i);
   }
 
   else{
     const i=document.createElement("input");
-    i.type="text"; dis(i); ctr.appendChild(i);
+    i.type="text"; dis(i);
+    ctr.appendChild(i);
   }
 
   wrap.appendChild(ctr);
@@ -449,7 +451,6 @@ function renderFilters(path){
     if(fo.length){
       const sec=document.createElement("section");
       sec.className="group";
-
       const hasU=fo.some(f=>f.layer==="uitgebreid");
       const hasE=fo.some(f=>f.layer==="expert");
 
@@ -484,21 +485,21 @@ document.addEventListener("DOMContentLoaded", async()=>{
 
   document.getElementById("btn-next-3").onclick=()=>{
     if(lastChoice==="zoek") goTo("screen-4-zoek");
-    else goTo("screen-4-vergelijk");
+    if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
   };
 
   document.getElementById("toggle-more-zoek").onclick=e=>{
     const tg=document.getElementById("filters-zoek-more");
-    tg.hidden=e.target.getAttribute("aria-expanded")==="true";
-    e.target.setAttribute("aria-expanded",
-      tg.hidden?"false":"true");
+    const ex=e.target.getAttribute("aria-expanded")==="true";
+    tg.hidden=ex;
+    e.target.setAttribute("aria-expanded",String(!ex));
   };
 
   document.getElementById("toggle-more-vergelijk").onclick=e=>{
     const tg=document.getElementById("filters-vergelijk-more");
-    tg.hidden=e.target.getAttribute("aria-expanded")==="true";
-    e.target.setAttribute("aria-expanded",
-      tg.hidden?"false":"true");
+    const ex=e.target.getAttribute("aria-expanded")==="true";
+    tg.hidden=ex;
+    e.target.setAttribute("aria-expanded",String(!ex));
   };
 
   document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
@@ -526,7 +527,9 @@ document.addEventListener("DOMContentLoaded", async()=>{
     ]);
     FILTERS.groups=mapGroups(g);
     FILTERS.fields=mapFields(f);
-  }catch(e){ console.error(e); }
+  }catch(e){
+    console.error(e);
+  }
 
   updateIcons();
   updateNav();
