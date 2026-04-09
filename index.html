@@ -22,13 +22,13 @@
     }
 
     /* ICONEN */
-    .floating-icon,
-    .floating-text{
-      position:absolute;
-      top:20px;
-      z-index:100;
-      display:none;
-    }
+    .floating-icon, .floating-text{
+    position:absolute;
+    top:20px;
+    z-index:100;
+    display:none;
+    pointer-events:none; /* <<< Dit maakt knoppen weer klikbaar */
+}
     .floating-icon{ left:20px; }
     .floating-text{ right:20px; }
 
