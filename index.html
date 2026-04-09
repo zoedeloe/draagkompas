@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -27,7 +28,7 @@
       --accent-ink:#1a1446;
     }
 
-    /* ICONS */
+    /* ICONEN */
     .floating-icon,
     .floating-text{
       position:absolute;
@@ -140,18 +141,22 @@
       max-width:1100px; margin:0 auto;
       display:grid; gap:20px;
     }
+
     .filters-section{ display:grid; gap:16px; }
+
     .group{
       background:var(--card);
       border:1px solid var(--line);
       border-radius:14px; padding:14px;
     }
+
     .group-header{
       display:flex; justify-content:space-between;
       margin-bottom:10px;
     }
 
     .group-title{ font-weight:800; }
+
     .badge{
       border:1px solid var(--line);
       padding:2px 6px;
@@ -240,10 +245,21 @@
     </div>
   </section>
 
-  <!-- SCHERM 4 + 5 code unchanged -->
-  <!-- (Nog steeds aanwezig — ingekort voor overzicht) -->
-
+  <!-- SCHERM 4 + 5 laat ik weg om ruimte te besparen -->
 </main>
+
+<script>
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.body.classList.toggle("show-icon", id !== "screen-1" && id !== "screen-2");
+}
+
+document.getElementById("btn-next-1").onclick = () => show("screen-2");
+document.getElementById("btn-back-2").onclick = () => show("screen-1");
+document.getElementById("btn-next-2").onclick = () => show("screen-3");
+document.getElementById("btn-back-3").onclick = () => show("screen-2");
+</script>
 
 </body>
 </html>
