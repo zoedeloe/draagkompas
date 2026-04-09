@@ -6,106 +6,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Draagkompas</title>
 
-  <!-- Montserrat (correct ingeladen) -->
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap">
 
   <style>
-    /* ======================== BASIS ============================ */
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
-    body {
-      background: #0f0b3a;
-      color: #fff;
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; }
+    body{
+      background:#0f0b3a;
+      color:#fff;
       font-family: Montserrat, system-ui, sans-serif;
     }
 
-    :root {
-      --bg:#0f0b3a; 
+    :root{
+      --bg:#0f0b3a;
       --card:#15104a;
-      --ink:#fff; 
+      --ink:#fff;
       --muted:#cfd3ff;
-      --accent:#ff7a59; 
+      --accent:#ff7a59;
       --accent-ink:#1a1446;
       --line:rgba(255,255,255,0.15);
       --panel:#1b165c;
       --floating-h:110px;
     }
 
-    /* ==================== ICONEN (absolute, meescrollend) ===================== */
+    /* ICONEN – absolute, meescrollend */
     .floating-icon,
-    .floating-text {
-      position: absolute;
-      top: 20px;
-      z-index: 100;
-      display: none;
+    .floating-text{
+      position:absolute;
+      top:20px;
+      z-index:100;
+      display:none;
     }
-    .floating-icon { left: 20px; }
-    .floating-text { right: 20px; }
+    .floating-icon{ left:20px; }
+    .floating-text{ right:20px; }
 
     body.show-icon .floating-icon,
-    body.show-icon .floating-text { display: block; }
+    body.show-icon .floating-text{ display:block; }
 
     .floating-icon img,
-    .floating-text img {
-      height: var(--floating-h);
-      width: auto;
-      display: block;
+    .floating-text img{
+      height:var(--floating-h);
+      width:auto;
+      display:block;
     }
 
-    /* ==================== SCHERMEN ====================== */
-    .screen {
-      display: none;
-      min-height: 100svh;
-      padding: 16px;
+    /* SCHERMEN */
+    .screen{
+      display:none;
+      min-height:100svh;
+      padding:16px;
     }
+    .screen.active{ display:block; }
 
-    .screen.active { display: block; }
-
-    /* ==================== VANAF SCHERM 3: ALTIJD RUIMTE BOVENAAN ====================== */
+    /* Vanaf scherm 3 vaste ruimte bovenaan */
     #screen-3,
     #screen-4-zoek,
     #screen-4-vergelijk,
-    #screen-5-results {
-      padding-top: 150px !important;
+    #screen-5-results{
+      padding-top:150px !important;
     }
-
     @media(max-width:720px){
       #screen-3,
       #screen-4-zoek,
       #screen-4-vergelijk,
-      #screen-5-results {
-        padding-top: 180px !important;
+      #screen-5-results{
+        padding-top:180px !important;
       }
     }
 
-    /* ==================== NAV ROW ====================== */
     .nav-row{
-      display:flex; gap:12px; justify-content:space-between; margin-top:12px;
+      display:flex; gap:12px; justify-content:space-between;
+      margin-top:12px;
     }
     .btn{
-      border:none; padding:14px 22px;
-      border-radius:12px; font-weight:800;
-      cursor:pointer; font-family:inherit;
+      border:none; padding:14px 22px; border-radius:12px;
+      font-weight:800; cursor:pointer; font-family:inherit;
     }
     .btn-primary{ background:var(--accent); color:var(--accent-ink); }
     .btn-secondary{ background:#2a246f; color:#fff; }
     .btn[disabled]{ opacity:.5; cursor:not-allowed; }
 
-    /* ==================== SCHERM 1 ====================== */
-    #btn-back-1 { display:none!important; }
-
+    /* SCHERM 1 */
+    #btn-back-1{ display:none!important; }
     .screen1-wrapper{
-      display:grid; 
-      place-items:center; 
+      display:grid; place-items:center;
       min-height:100svh;
     }
+    .intro-inner{
+      display:grid; gap:24px; justify-items:center;
+      max-width:1100px;
+    }
+    .intro-logo{ width:min(95%,1100px); height:auto; }
 
-    .intro-inner { display:grid; gap:24px; justify-items:center; max-width:1100px; }
-    .intro-logo { width:min(95%,1100px); height:auto; }
-
-    /* ==================== SCHERM 2 ====================== */
+    /* SCHERM 2 */
     .screen2-wrapper{
       max-width:1100px; margin:0 auto; display:grid; gap:20px;
     }
@@ -114,53 +108,50 @@
       box-shadow:0 8px 28px rgba(0,0,0,.35);
     }
 
-    /* ==================== SCHERM 3 ====================== */
+    /* SCHERM 3 */
     .screen3-wrapper{
       max-width:1100px; margin:0 auto;
       display:grid; gap:28px;
     }
-
     .choice-grid{
-      display:grid; grid-template-columns:repeat(2,1fr);
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
       gap:20px; align-items:center;
     }
-    @media(max-width:700px){ .choice-grid{ grid-template-columns:1fr; } }
-
+    @media(max-width:700px){
+      .choice-grid{ grid-template-columns:1fr; }
+    }
     .choice-card{
       background:var(--card);
       border:1px solid var(--line);
       border-radius:18px;
       padding:28px;
-      display:grid;
-      gap:18px;
+      display:grid; gap:18px;
       cursor:pointer;
     }
-
     .choice-icon{ font-size:40px; }
-    .choice-title{ 
-      font-size:28px; 
-      font-weight:800; 
-      letter-spacing:.06em; 
-      color:#fff; 
+    .choice-title{
+      font-size:28px;
+      font-weight:800;
+      letter-spacing:.06em;
+      color:#fff;
     }
     .choice-sub{ font-size:16px; color:var(--muted); }
 
-    /* ==================== SCHERM 4 ====================== */
+    /* SCHERM 4 */
     .filters-wrapper{
-      max-width:1100px; margin:0 auto; display:grid; gap:20px;
+      max-width:1100px; margin:0 auto;
+      display:grid; gap:20px;
     }
-
     .filters-section{ display:grid; gap:16px; }
 
     .group{
       background:var(--card);
       border:1px solid var(--line);
-      border-radius:14px;
-      padding:14px;
+      border-radius:14px; padding:14px;
     }
-
     .group-header{
-      display:flex; justify-content:space-between; 
+      display:flex; justify-content:space-between;
       align-items:center; margin-bottom:10px;
     }
     .group-title{ font-weight:800; }
@@ -180,24 +171,25 @@
     select,input[type="text"],input[type="number"]{
       background:#201a6b;
       border:1px solid var(--line);
-      color:#fff; padding:8px 10px;
-      border-radius:8px; min-width:180px;
+      color:#fff;
+      padding:8px 10px;
+      border-radius:8px;
+      min-width:180px;
     }
 
     .is-disabled{ opacity:.55; }
     .is-disabled *{ pointer-events:none!important; }
 
-    /* ==================== SCHERM 5 ====================== */
+    /* SCHERM 5 */
     .results-wrapper{
-      max-width:900px; margin:0 auto; display:grid; gap:16px;
+      max-width:900px; margin:0 auto;
+      display:grid; gap:16px;
     }
-
     .results-summary{
       background:#201a6b; border:1px solid var(--line);
       border-radius:10px; padding:12px;
       white-space:pre-wrap;
     }
-
   </style>
 </head>
 
@@ -205,7 +197,7 @@
 
 <main id="app">
 
-  <!-- ✅ ICONEN CORRECT BINNEN MAIN MET IMG TAGS -->
+  <!-- ICONEN – CORRECT -->
   <div class="floating-icon">
     <img src="assets/img/header-icon.png" alt="">
   </div>
@@ -218,7 +210,7 @@
   <section id="screen-1" class="screen active">
     <div class="screen1-wrapper">
       <div class="intro-inner">
-        <img src="assets/img/logo.png" class="intro-logo" alt="">
+        <img src="assets/img/logo.png" class="intro-logo" alt="Logo">
         <div class="nav-row">
           <button id="btn-back-1" class="btn btn-secondary">TERUG</button>
           <button id="btn-next-1" class="btn btn-primary">VERDER</button>
@@ -243,6 +235,7 @@
   <!-- SCHERM 3 -->
   <section id="screen-3" class="screen">
     <div class="screen3-wrapper">
+
       <div class="choice-grid">
 
         <button id="card-zoek" class="choice-card">
@@ -278,9 +271,7 @@
       <div id="filters-zoek-basic" class="filters-section"></div>
 
       <div class="filters-more">
-        <button id="toggle-more-zoek" class="btn btn-tertiary" aria-expanded="false">
-          MEER FILTERS
-        </button>
+        <button id="toggle-more-zoek" class="btn" aria-expanded="false">MEER FILTERS</button>
         <div id="filters-zoek-more" class="more-panel" hidden></div>
       </div>
 
@@ -303,9 +294,7 @@
       <div id="filters-vergelijk-basic" class="filters-section"></div>
 
       <div class="filters-more">
-        <button id="toggle-more-vergelijk" class="btn btn-tertiary" aria-expanded="false">
-          MEER FILTERS
-        </button>
+        <button id="toggle-more-vergelijk" class="btn" aria-expanded="false">MEER FILTERS</button>
         <div id="filters-vergelijk-more" class="more-panel" hidden></div>
       </div>
 
@@ -323,9 +312,7 @@
 
       <h2>RESULTATEN</h2>
 
-      <pre id="selected-filters" class="results-summary">
-Nog geen filters geselecteerd.
-      </pre>
+      <pre id="selected-filters" class="results-summary">Nog geen filters geselecteerd.</pre>
 
       <div class="nav-row">
         <button id="btn-back-5" class="btn btn-secondary">TERUG</button>
@@ -339,26 +326,19 @@ Nog geen filters geselecteerd.
 
 
 <script>
-/* ========= GOOGLE SHEETS LOAD ========= */
 const GOOGLE_SHEET_ID = "16F_daQjGcgkKeXGJeynj0VNBePvcsiWrdj7n3xlMsto";
 
 async function fetchGVizJSON(sheetName){
   const url =
     `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq`+
     `?tqx=out:json&sheet=${sheetName}&_=${Date.now()}`;
-
   const resp = await fetch(url);
   const text = await resp.text();
   const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
-
   if(!match) throw new Error("GViz fout");
-
   const data = JSON.parse(match[1]);
   const headers = data.table.cols.map(c => c.label);
-  const rows = data.table.rows.map(r =>
-    r.c.map(c => c ? c.v : "")
-  );
-
+  const rows = data.table.rows.map(r => r.c.map(c => c ? c.v : ""));
   return {headers, rows};
 }
 
@@ -368,98 +348,90 @@ function mapIndex(headers){
 
 function makeGroups(sheet){
   const idx = mapIndex(sheet.headers);
-  return sheet.rows.map(r => ({
-    id: r[idx.id],
-    label: r[idx.label],
-    order: Number(r[idx.order])
+  return sheet.rows.map(r=>({
+    id:r[idx.id], label:r[idx.label], order:Number(r[idx.order])
   })).sort((a,b)=>a.order-b.order);
 }
 
 function makeFields(sheet){
   const idx = mapIndex(sheet.headers);
-  return sheet.rows.map(r => ({
-    id: r[idx.id],
-    label: r[idx.label],
-    group: r[idx.group],
-    layer: r[idx.layer],
-    type: r[idx.type],
-    options: (r[idx.options] || "").split("|").map(s=>s.trim()).filter(Boolean),
-    tooltip: r[idx.tooltip] || "",
-    order: Number(r[idx.order])
+  return sheet.rows.map(r=>({
+    id:r[idx.id],
+    label:r[idx.label],
+    group:r[idx.group],
+    layer:r[idx.layer],
+    type:r[idx.type],
+    options:(r[idx.options]||"").split("|").map(s=>s.trim()).filter(Boolean),
+    tooltip:r[idx.tooltip]||"",
+    order:Number(r[idx.order])
   })).sort((a,b)=>a.order-b.order);
 }
 
-/* ========= UI ========= */
 const SCREENS=[
   "screen-1","screen-2","screen-3",
   "screen-4-zoek","screen-4-vergelijk",
   "screen-5-results"
 ];
-
 let lastChoice=null;
 let FILTERS={groups:[],fields:[]};
 
 function goTo(id){
   SCREENS.forEach(s=>{
-    document.getElementById(s).classList.toggle("active", s===id);
+    document.getElementById(s).classList.toggle("active",s===id);
   });
   updateIcon();
   updateNav();
 }
 
 function updateIcon(){
-  const idx = SCREENS.findIndex(s =>
-    document.getElementById(s).classList.contains("active")
+  const idx = SCREENS.findIndex(
+    s=>document.getElementById(s).classList.contains("active")
   );
-
-  if(idx >= 2) document.body.classList.add("show-icon");
+  if(idx>=2) document.body.classList.add("show-icon");
   else document.body.classList.remove("show-icon");
 }
 
 function updateNav(){
-  const btn = document.getElementById("btn-next-3");
-  if(btn){ btn.disabled = !lastChoice; }
+  const btn=document.getElementById("btn-next-3");
+  if(btn) btn.disabled = !lastChoice;
 }
 
 function layerActive(layer,path){
   if(layer==="basis") return true;
   if(layer==="uitgebreid") return path==="vergelijk";
-  return false; /* expert = altijd disabled */
+  return false;
 }
 
 function createField(f,path){
   const active = layerActive(f.layer,path);
+  const wrap=document.createElement("div");
+  wrap.className="field"+(active?"":" is-disabled");
 
-  const wrap = document.createElement("div");
-  wrap.className = "field" + (active ? "" : " is-disabled");
-
-  const label = document.createElement("div");
+  const label=document.createElement("div");
   label.className="field-label";
-  label.textContent = f.label;
-
+  label.textContent=f.label;
   wrap.appendChild(label);
 
-  const controls = document.createElement("div");
+  const controls=document.createElement("div");
   controls.className="field-controls";
 
-  function disable(el){ if(!active){ el.disabled=true; } }
+  function disable(el){ if(!active) el.disabled=true; }
 
   if(f.type==="chips"){
     const box=document.createElement("div");
     box.className="chips";
     f.options.forEach(opt=>{
-      const b=document.createElement("button");
-      b.className="chip";
-      b.textContent=opt;
-      b.type="button";
-      b.setAttribute("aria-pressed","false");
+      const c=document.createElement("button");
+      c.type="button"; c.className="chip";
+      c.textContent=opt;
+      c.setAttribute("aria-pressed","false");
       if(active){
-        b.onclick=()=>{
-          const val=b.getAttribute("aria-pressed")==="true";
-          b.setAttribute("aria-pressed", String(!val));
-        }
+        c.onclick=()=>{
+          const v=c.getAttribute("aria-pressed")==="true";
+          c.setAttribute("aria-pressed",String(!v));
+        };
       }
-      box.appendChild(b);
+      box.appendChild(c);
     });
     controls.appendChild(box);
   }
@@ -481,7 +453,7 @@ function createField(f,path){
     inp.type="checkbox";
     disable(inp);
     lab.appendChild(inp);
-    lab.appendChild(document.createTextNode(" JA/NEE"));
+    lab.append(" JA/NEE");
     controls.appendChild(lab);
   }
 
@@ -492,7 +464,7 @@ function createField(f,path){
     controls.appendChild(inp);
   }
 
-  else {
+  else{
     const inp=document.createElement("input");
     inp.type="text";
     disable(inp);
@@ -504,23 +476,23 @@ function createField(f,path){
 }
 
 function renderFilters(path){
-  const basic = document.getElementById(`filters-${path}-basic`);
-  const more  = document.getElementById(`filters-${path}-more`);
-  basic.innerHTML="";
-  more.innerHTML="";
+  const basic=document.getElementById(`filters-${path}-basic`);
+  const more=document.getElementById(`filters-${path}-more`);
+  basic.innerHTML=""; more.innerHTML="";
 
   FILTERS.groups.forEach(g=>{
     const flds = FILTERS.fields.filter(f=>f.group===g.id);
-    const basics = flds.filter(f=>f.layer==="basis");
-    const others = flds.filter(f=>f.layer!=="basis");
+    const basics=flds.filter(f=>f.layer==="basis");
+    const others=flds.filter(f=>f.layer!=="basis");
 
     if(basics.length){
       const sec=document.createElement("section");
       sec.className="group";
-      sec.innerHTML=`<div class="group-header">
-        <div class="group-title">${g.label}</div>
-        <div class="badges"><span class="badge">BASIS</span></div>
-      </div>`;
+      sec.innerHTML=`
+        <div class="group-header">
+          <div class="group-title">${g.label}</div>
+          <div class="badges"><span class="badge">BASIS</span></div>
+        </div>`;
       basics.forEach(f=>sec.appendChild(createField(f,path)));
       basic.appendChild(sec);
     }
@@ -528,17 +500,18 @@ function renderFilters(path){
     if(others.length){
       const sec=document.createElement("section");
       sec.className="group";
-      const hasU = others.some(f=>f.layer==="uitgebreid");
-      const hasE = others.some(f=>f.layer==="expert");
+
+      const hasU=others.some(f=>f.layer==="uitgebreid");
+      const hasE=others.some(f=>f.layer==="expert");
 
       sec.innerHTML=`
-      <div class="group-header">
-        <div class="group-title">${g.label}</div>
-        <div class="badges">
-          ${hasU ? `<span class="badge">UITGEBREID</span>` : ""}
-          ${hasE ? `<span class="badge">EXPERT</span>`    : ""}
-        </div>
-      </div>`;
+       <div class="group-header">
+         <div class="group-title">${g.label}</div>
+         <div class="badges">
+           ${hasU?'<span class="badge">UITGEBREID</span>':''}
+           ${hasE?'<span class="badge">EXPERT</span>':''}
+         </div>
+       </div>`;
 
       others.forEach(f=>sec.appendChild(createField(f,path)));
       more.appendChild(sec);
@@ -548,7 +521,6 @@ function renderFilters(path){
 
 document.addEventListener("DOMContentLoaded", async ()=>{
 
-  /* SCHERM NAVIGATIE */
   document.getElementById("btn-next-1").onclick=()=>goTo("screen-2");
   document.getElementById("btn-back-2").onclick=()=>goTo("screen-1");
   document.getElementById("btn-next-2").onclick=()=>goTo("screen-3");
@@ -570,22 +542,20 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     if(lastChoice==="vergelijk") goTo("screen-4-vergelijk");
   };
 
-  /* FILTER MORE TOGGLES */
   document.getElementById("toggle-more-zoek").onclick=e=>{
     const tgt=document.getElementById("filters-zoek-more");
     const exp=e.target.getAttribute("aria-expanded")==="true";
     tgt.hidden=exp;
-    e.target.setAttribute("aria-expanded", String(!exp));
+    e.target.setAttribute("aria-expanded",String(!exp));
   };
 
   document.getElementById("toggle-more-vergelijk").onclick=e=>{
     const tgt=document.getElementById("filters-vergelijk-more");
     const exp=e.target.getAttribute("aria-expanded")==="true";
     tgt.hidden=exp;
-    e.target.setAttribute("aria-expanded", String(!exp));
+    e.target.setAttribute("aria-expanded",String(!exp));
   };
 
-  /* SCHERM 4 NAAR 5 */
   document.getElementById("btn-back-4-zoek").onclick=()=>goTo("screen-3");
   document.getElementById("btn-back-4-vergelijk").onclick=()=>goTo("screen-3");
 
@@ -593,32 +563,30 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     document.getElementById("selected-filters").textContent="Gekozen pad: IK ZOEK";
     goTo("screen-5-results");
   };
+
   document.getElementById("btn-next-4-vergelijk").onclick=()=>{
     document.getElementById("selected-filters").textContent="Gekozen pad: IK VERGELIJK";
     goTo("screen-5-results");
   };
 
-  /* TERUG OP SCHERM 5 */
   document.getElementById("btn-back-5").onclick=()=>{
     if(lastChoice==="zoek") goTo("screen-4-zoek");
     else goTo("screen-4-vergelijk");
   };
 
-  /* LOAD SHEET DATA */
   try{
-    const [g,f] = await Promise.all([
+    const [g,f]=await Promise.all([
       fetchGVizJSON("groups"),
       fetchGVizJSON("fields")
     ]);
     FILTERS.groups = makeGroups(g);
     FILTERS.fields = makeFields(f);
-  } catch(e){
-    console.error("Google Sheet fout:", e);
+  }catch(e){
+    console.error("Google Sheet error:",e);
   }
 
   updateIcon();
   updateNav();
-
 });
 </script>
 
